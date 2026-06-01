@@ -1,65 +1,59 @@
 import fetch from 'node-fetch'
-import fs from 'fs'
 
-let handler = async (m, { conn }) => {
-  try {
-    // Verificamos que haya una imagen
-    let q = m.quoted ? m.quoted : m
-    let mime = (q.msg || q).mimetype || ''
-    if (!/image/.test(mime)) {
-      return conn.reply(
-        m.chat,
-        '🖼️ Responde a una imagen con *.hd* para mejorar su calidad.',
-        m
-      )
+let cooldown = new Map()
+
+let handler = async (m, { conn, usedPrefix, command }) => {
+  let id = m.sender
+
+  if (cooldown.has(id)) {
+    let time = cooldown.get(id) - Date.now()
+    if (time > 0) {
+      return conn.reply(m.chat, `⏳ Espera ${Math.ceil(time / 1000)}s para volver a usar HD`, m)
     }
+  }
 
-    await conn.reply(m.chat, '⏳ Mejorando la calidad de la imagen...', m)
+  let q = m.quoted ? m.quoted : m
+  let mime = (q.msg || q).mimetype || ''
 
-    // Descargamos la imagen
+  if (!/image/.test(mime)) {
+    return conn.reply(m.chat, `🖼️ Responde a una imagen con *${usedPrefix + command}*`, m)
+  }
+
+  cooldown.set(id, Date.now() + 15000)
+
+  await conn.reply(m.chat, `🌸 Elyssia Bot MD\n\n✨ Mejorando imagen a HD...`, m)
+
+  try {
     let media = await q.download()
-    let tempFile = `temp_${Date.now()}.jpg`
-    fs.writeFileSync(tempFile, media)
 
-    // Convertimos la imagen a base64
-    let b64 = fs.readFileSync(tempFile, { encoding: 'base64' })
+    let form = new FormData()
+    form.append('file', new Blob([media]), 'image.jpg')
+    form.append('scale', '2')
+    form.append('format', 'auto')
 
-    // Llamada a la API de Mitsuki
-    let res = await fetch('https://api.mitsukiapi.xyz/image/hd', {
+    let res = await fetch('https://api.dvyer.dev/image/hd/upload', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'sk-b9c406e478c20c53a588ea4b875339fff5d60464d52b05f795a54e4b94554ef5' // Tu API Key
-      },
-      body: JSON.stringify({ image: `data:image/jpeg;base64,${b64}` })
+      body: form
     })
 
-    let json = await res.json()
-    if (!json.result) throw '❌ No se pudo mejorar la imagen.'
+    if (!res.ok) throw new Error('Error en la API')
 
-    // Enviamos la imagen HD al chat
-    await conn.sendMessage(
-      m.chat,
-      {
-        image: { url: json.result },
-        caption: '✨ Imagen mejorada a HD 🌸 Elyssia Bot MD'
-      },
-      { quoted: m }
-    )
+    let buffer = Buffer.from(await res.arrayBuffer())
 
-    fs.unlinkSync(tempFile)
+    await conn.sendMessage(m.chat, {
+      image: buffer,
+      caption: `🌸 *ELYSSIA BOT MD*\n✨ Imagen mejorada en HD`
+    }, { quoted: m })
+
   } catch (e) {
-    console.error(e)
-    conn.reply(
-      m.chat,
-      '❌ Ocurrió un error al mejorar la imagen.\nAsegúrate de que la API Key sea válida y la imagen sea compatible.',
-      m
-    )
+    console.log(e)
+    conn.reply(m.chat, '❌ Error al mejorar la imagen.', m)
+    cooldown.delete(id)
   }
 }
 
 handler.help = ['hd']
 handler.tags = ['tools']
-handler.command = ['hd']
+handler.command = ['hd', 'remini']
 
 export default handler
