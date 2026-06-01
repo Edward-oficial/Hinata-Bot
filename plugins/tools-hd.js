@@ -1,10 +1,9 @@
 import fetch from 'node-fetch'
 import fs from 'fs'
-import path from 'path'
 
 let handler = async (m, { conn }) => {
   try {
-    // Validamos que haya una imagen
+    // Verificamos que haya una imagen
     let q = m.quoted ? m.quoted : m
     let mime = (q.msg || q).mimetype || ''
     if (!/image/.test(mime)) {
@@ -19,36 +18,43 @@ let handler = async (m, { conn }) => {
 
     // Descargamos la imagen
     let media = await q.download()
-    let tempFile = path.join('./', `temp_${Date.now()}.jpg`)
+    let tempFile = `temp_${Date.now()}.jpg`
     fs.writeFileSync(tempFile, media)
 
-    // Subimos la imagen a la API de ejemplo (puedes usar tu propia API)
-    let formData = new FormData()
-    formData.append('image', fs.createReadStream(tempFile))
+    // Convertimos la imagen a base64
+    let b64 = fs.readFileSync(tempFile, { encoding: 'base64' })
 
-    let res = await fetch('https://api.waifu.pics/sfw/hd', { // Aquí va tu API real
+    // Llamada a la API de Mitsuki
+    let res = await fetch('https://api.mitsukiapi.xyz/image/hd', {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'sk-b9c406e478c20c53a588ea4b875339fff5d60464d52b05f795a54e4b94554ef5' // Tu API Key
+      },
+      body: JSON.stringify({ image: `data:image/jpeg;base64,${b64}` })
     })
 
     let json = await res.json()
-    if (!json.url) throw '❌ No se pudo mejorar la imagen.'
+    if (!json.result) throw '❌ No se pudo mejorar la imagen.'
 
     // Enviamos la imagen HD al chat
     await conn.sendMessage(
       m.chat,
       {
-        image: { url: json.url },
+        image: { url: json.result },
         caption: '✨ Imagen mejorada a HD 🌸 Elyssia Bot MD'
       },
       { quoted: m }
     )
 
-    // Borramos el archivo temporal
     fs.unlinkSync(tempFile)
   } catch (e) {
     console.error(e)
-    conn.reply(m.chat, '❌ Ocurrió un error al mejorar la imagen.', m)
+    conn.reply(
+      m.chat,
+      '❌ Ocurrió un error al mejorar la imagen.\nAsegúrate de que la API Key sea válida y la imagen sea compatible.',
+      m
+    )
   }
 }
 
