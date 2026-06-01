@@ -1,4 +1,4 @@
-✨ Elyssia-Bot-MD 👑
+*🌸 ElyssiaBot-MD 👑*
 
   <a href='https://postimages.org/' target='_blank'><img src='https://i.postimg.cc/pddbZTv0/1000519692.png' border='0' alt='1000519692'></a>"
 
