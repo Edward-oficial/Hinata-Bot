@@ -1,200 +1,144 @@
-import yts from "yt-search"
-import fetch from "node-fetch"
+import yts from 'yt-search'
+import fetch from 'node-fetch'
 
 const handler = async (m, { conn, text }) => {
-  if (!text) return m.reply("🎶 Ingresa el nombre o enlace del video de YouTube.")
+  if (!text) return m.reply('🎵 Ingresa el nombre o enlace de YouTube.')
 
-  await m.react("🕘")
+  await m.react('🎧')
 
   try {
-    let url = text.trim()
-    let title = "Desconocido"
-    let authorName = "Desconocido"
-    let durationTimestamp = "Desconocida"
-    let views = 0
-    let thumbnail = ""
+    let url = text
+    let video
 
-    const isUrl = /^https?:\/\/\S+/i.test(url)
+    if (!/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(text)) {
+      const search = await yts(text)
 
-    if (isUrl) {
-      if (!isYouTubeUrl(url)) {
-        return m.reply("🚫 El enlace no es válido de YouTube.")
+      if (!search.videos.length) {
+        return m.reply('❌ No encontré resultados.')
       }
 
-      const videoId = extractVideoId(url)
-      if (!videoId) {
-        return m.reply("🚫 No pude extraer el ID del video.")
-      }
-
-      const res = await yts({ videoId })
-
-      if (!res) {
-        return m.reply("🚫 No pude obtener información del video.")
-      }
-
-      title = res.title || title
-      authorName = res.author?.name || authorName
-      durationTimestamp = res.timestamp || durationTimestamp
-      views = res.views || views
-      thumbnail = res.thumbnail || thumbnail
-      url = res.url || url
+      video = search.videos[0]
+      url = video.url
     } else {
-      const res = await yts(url)
+      const search = await yts({ videoId: getVideoId(text) })
 
-      if (!res?.videos?.length) {
-        return m.reply("🚫 No encontré nada.")
+      if (!search) {
+        return m.reply('❌ No pude obtener información del video.')
       }
 
-      const video = res.videos[0]
-      title = video.title || title
-      authorName = video.author?.name || authorName
-      durationTimestamp = video.timestamp || durationTimestamp
-      views = video.views || views
-      url = video.url || url
-      thumbnail = video.thumbnail || thumbnail
+      video = search
     }
 
-    const vistas = formatViews(views)
+    const info = `
+✧━───『 𝙰𝚄𝙳𝙸𝙾 𝚈𝚃 』───━✧
 
-    const fallbackThumbRes = await fetch("https://i.ibb.co/83pbxQN/5eecaebbc7c3.jpg")
-    const fallbackThumb = Buffer.from(await fallbackThumbRes.arrayBuffer())
+🎼 *Título:* ${video.title}
+📺 *Canal:* ${video.author?.name || 'Desconocido'}
+⏳ *Duración:* ${video.timestamp || 'Desconocida'}
+👁️ *Vistas:* ${formatViews(video.views)}
+🔗 *URL:* ${url}
 
-    const fkontak = {
-      key: {
-        fromMe: false,
-        participant: "0@s.whatsapp.net",
-        remoteJid: "status@broadcast"
-      },
-      message: {
-        locationMessage: {
-          name: `『 ${title} 』`,
-          jpegThumbnail: fallbackThumb
-        }
-      }
-    }
-
-    const caption = `
-✧━───『 𝙸𝚗𝚏𝚘 𝚍𝚎𝚕 𝚅𝚒𝚍𝚎𝚘 』───━✧
-
-🎼 _título_: ${title}
-📺 _canal_: ${authorName}
-👁️ _vistas_: ${vistas}
-⏳ _duración_: ${durationTimestamp}
-🌐 _enlace_: ${url}
-📚 _api_ https://dv-yer-api.online
-
-     ✧━『 _𝙴𝙻𝚈𝚂𝚂𝙸𝙰 MD_ 』━✧
-    🌸 _Powered by AmilcarGit_ 🌸
+🌸 Powered by ElyssiaMD 🌸
 `
-
-    let thumb = fallbackThumb
-
-    if (thumbnail) {
-      try {
-        thumb = (await conn.getFile(thumbnail)).data
-      } catch {
-        thumb = fallbackThumb
-      }
-    }
 
     await conn.sendMessage(
       m.chat,
       {
-        image: thumb,
-        caption
+        image: { url: video.thumbnail },
+        caption: info
       },
-      { quoted: fkontak }
-    )
-
-    await downloadMedia(conn, m, url, fkontak)
-    await m.react("✅")
-  } catch (e) {
-    console.error(e)
-    await m.reply("❌ Error: " + e.message)
-    await m.react("⚠️")
-  }
-}
-
-const downloadMedia = async (conn, m, url, quotedMsg) => {
-  try {
-    const sent = await conn.sendMessage(
-      m.chat,
-      { text: "🎵 Descargando audio..." },
       { quoted: m }
     )
 
-    const apiUrl = `https://dv-yer-api.online/ytmp3?url=https://www.youtube.com/watch?v=dQw4w9WgXcQ}`
-    const r = await fetch(apiUrl)
+    const wait = await conn.sendMessage(
+      m.chat,
+      { text: '⏳ Descargando audio...' },
+      { quoted: m }
+    )
 
-    if (!r.ok) {
-      return m.reply(`🚫 Error HTTP ${r.status} al obtener el audio.`)
+    const api = `https://dv-yer-api.online/ytmp3?url=${encodeURIComponent(url)}`
+    const res = await fetch(api)
+
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`)
     }
 
-    const data = await r.json()
-    console.log("Respuesta API:", JSON.stringify(data, null, 2))
+    const data = await res.json()
 
-    if (!data?.status || !data?.result?.download_url) {
-      return m.reply("🚫 No se pudo obtener el audio.")
+    console.log('DV-YER:', data)
+
+    const audioUrl =
+      data.download ||
+      data.url ||
+      data.result?.download ||
+      data.result?.url
+
+    if (!audioUrl) {
+      throw new Error('No se encontró el enlace del audio.')
     }
 
-    const fileUrl = data.result.download_url
-    const fileTitle = cleanName(data.result.title || "audio")
+    const title = cleanName(
+      data.title ||
+      data.result?.title ||
+      video.title ||
+      'audio'
+    )
 
     await conn.sendMessage(
       m.chat,
       {
-        audio: { url: fileUrl },
-        mimetype: "audio/mpeg",
-        fileName: `${fileTitle}.mp3`,
-        ptt: false
+        audio: { url: audioUrl },
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`
       },
-      { quoted: quotedMsg }
+      { quoted: m }
     )
 
     try {
       await conn.sendMessage(
         m.chat,
         {
-          text: `✅ Descarga completada\n\n🎼 Título: ${fileTitle}`,
-          edit: sent.key
+          text: `✅ Audio enviado\n\n🎼 ${title}`,
+          edit: wait.key
         }
       )
-    } catch {
-      await m.reply(`✅ Descarga completada\n\n🎼 Título: ${fileTitle}`)
-    }
+    } catch {}
+
+    await m.react('✅')
+
   } catch (e) {
     console.error(e)
-    await m.reply("❌ Error: " + e.message)
-    await m.react("💀")
+    await m.react('❌')
+    m.reply(`Error:\n${e.message}`)
   }
 }
 
-const cleanName = (name) =>
-  String(name).replace(/[^\w\s._-]/gi, "").substring(0, 50)
+function cleanName(text) {
+  return String(text)
+    .replace(/[^\w\s.-]/g, '')
+    .substring(0, 60)
+}
 
-const formatViews = (views) => {
+function formatViews(views) {
   const n = Number(views)
-  if (!n || Number.isNaN(n)) return "No disponible"
-  if (n >= 1e9) return `${(n / 1e9).toFixed(1)}B`
-  if (n >= 1e6) return `${(n / 1e6).toFixed(1)}M`
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`
-  return n.toString()
+
+  if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B'
+  if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M'
+  if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K'
+
+  return String(n || 0)
 }
 
-const isYouTubeUrl = (url) => {
-  return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//i.test(url)
+function getVideoId(url) {
+  const match = url.match(
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/
+  )
+
+  return match ? match[1] : null
 }
 
-const extractVideoId = (url) => {
-  const match =
-    url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})(?:[?&/]|\b)/) ||
-    url.match(/youtu\.be\/([0-9A-Za-z_-]{11})/)
-  return match?.[1] || null
-}
-
-handler.command = ["play", "yt", "ytsearch"]
+handler.help = ['mp3 <texto|url>']
 handler.tags = ['descargas']
-handler.help = ['play'];
-handler.register = false
+handler.command = ['mp3', 'yta', 'ytmp3']
 
 export default handler
