@@ -1,42 +1,55 @@
 import fetch from 'node-fetch'
+import fs from 'fs'
+import path from 'path'
 
 let handler = async (m, { conn }) => {
-  let q = m.quoted ? m.quoted : m
-  let mime = (q.msg || q).mimetype || ''
+  try {
+    // Validamos que haya una imagen
+    let q = m.quoted ? m.quoted : m
+    let mime = (q.msg || q).mimetype || ''
+    if (!/image/.test(mime)) {
+      return conn.reply(
+        m.chat,
+        '🖼️ Responde a una imagen con *.hd* para mejorar su calidad.',
+        m
+      )
+    }
 
-  if (!/image/.test(mime)) {
-    return conn.reply(
+    await conn.reply(m.chat, '⏳ Mejorando la calidad de la imagen...', m)
+
+    // Descargamos la imagen
+    let media = await q.download()
+    let tempFile = path.join('./', `temp_${Date.now()}.jpg`)
+    fs.writeFileSync(tempFile, media)
+
+    // Subimos la imagen a la API de ejemplo (puedes usar tu propia API)
+    let formData = new FormData()
+    formData.append('image', fs.createReadStream(tempFile))
+
+    let res = await fetch('https://api.waifu.pics/sfw/hd', { // Aquí va tu API real
+      method: 'POST',
+      body: formData
+    })
+
+    let json = await res.json()
+    if (!json.url) throw '❌ No se pudo mejorar la imagen.'
+
+    // Enviamos la imagen HD al chat
+    await conn.sendMessage(
       m.chat,
-      '🖼️ Responde a una imagen con *.hd* para mejorar su calidad.',
-      m
+      {
+        image: { url: json.url },
+        caption: '✨ Imagen mejorada a HD 🌸 Elyssia Bot MD'
+      },
+      { quoted: m }
     )
+
+    // Borramos el archivo temporal
+    fs.unlinkSync(tempFile)
+  } catch (e) {
+    console.error(e)
+    conn.reply(m.chat, '❌ Ocurrió un error al mejorar la imagen.', m)
   }
-
-  await conn.reply(
-    m.chat,
-    '⏳ Mejorando calidad de la imagen...',
-    m
-  )
-
-  let media = await q.download()
-
-  // Sube la imagen usando la función que tenga tu bot
-  let url = await conn.uploadFile(media)
-
-  // Reemplaza esta API por la que utilices
-  let api = `https://api.example.com/hd?url=${encodeURIComponent(url)}`
-
-  let res = await fetch(api)
-  let json = await res.json()
-
-  if (!json.status) {
-    throw '❌ No se pudo mejorar la imagen.'
-  }
-
-  await conn.sendMessage(m.chat, {
-    image: { url: json.result },
-    caption: '✨ Imagen mejorada en HD\n🌸 Elyssia Bot MD'
-  }, { quoted: m })
 }
 
 handler.help = ['hd']
