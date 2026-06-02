@@ -67,7 +67,7 @@ Más que un bot, una compañera digital.
 
 ## 💻 𝗚𝘂𝗶𝗮 𝗱𝗲 𝗜𝗻𝘀𝘁𝗮𝗹𝗮𝗰𝗶𝗼𝗻 𝗲𝗻 𝗧𝗲𝗿𝗺𝘂𝘅
 
-Sigue estos pasos para instalar y ejecutar **Gohan Beast Bot** en tu dispositivo.
+Sigue estos pasos para instalar y ejecutar **ELYSSIA BOT MD** en tu dispositivo.
 
 1. **Concede Permisos de Almacenamiento**
 ```bash
