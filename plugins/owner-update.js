@@ -47,7 +47,7 @@ const handler = async (m, { conn, args }) => {
 
     const isUpdated = output.includes('Already up to date');
     const updateMsg = isUpdated
-      ? '✨ *Elyssia MD ya está a la última. ¡Nada que actualizar!*'
+      ? '✨ *Elyssia MD🌸 ya está a la última ACTUALIZACIÓN. ¡Nada que actualizar!*'
       : `✅ *Actualización completada con éxito:*\n\n${output}`;
 
     await conn.reply(m.chat, updateMsg, m);
