@@ -124,16 +124,11 @@ global.factos = [
   "🧠 Eres la versión sin inteligencia artificial.",
   "📎 Si fueras un adjunto, estarías corrupto.",
   "📺 Tu vida se transmite en baja resolución.",
-"🚪 Te rendiste frente a puertas que ni siquiera intentaste abrir."
-,
-"🎯 Fallaste tiros que nunca hiciste."
-,
-"🥀 Fuiste un "casi."
-,
-"🪞 Soñaste en grande, actuaste en pequeño."
-,
-"🌊 Te ahogaste imaginando el agua."
-,
-"🚧 Te detuviste por obstáculos que aún no existían."
-,
+"🚪 Te rendiste frente a puertas que ni siquiera intentaste abrir.",
+"🎯 Fallaste tiros que nunca hiciste.",
+"🥀 Fuiste un "casi.",
+"🪞 Soñaste en grande, actuaste en pequeño.",
+"🌊 Te ahogaste imaginando el agua.",
+"🚧 Te detuviste por obstáculos que aún no existían.",
+"📺 Tu vida se transmite en baja resolución.",
 ];
