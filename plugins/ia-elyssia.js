@@ -61,7 +61,7 @@ ${reply}
     }
 }
 
-handler.help = ['elyssia', 'ia', 'chat']
+handler.help = ['chat']
 handler.tags = ['ia', 'ai']
 handler.command = /^(elyssia|ai|chat)$/i
 
