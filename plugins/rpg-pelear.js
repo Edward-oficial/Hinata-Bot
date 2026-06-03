@@ -19,14 +19,14 @@ let handler = async (m, { conn }) => {
     let sections = [{
       title: '⚔️ ACCIONES DE COMBATE',
       rows: [
-        { header: '⚔️ ATACAR', title: 'Golpear al enemigo', description: 'Daño: ' + (user.attack || 10) + ' ⚔️', id: 'acc_atacar' },
+        { header: '⚔️ ATACAR', title: 'Golpear al enemigo', description: 'Daño: ' + Math.floor((user.attack || 10) * 0.3) + '-' + (user.attack || 10) + ' ⚔️', id: 'acc_atacar' },
         { header: '🏃 HUIR', title: 'Escapar del combate', description: 'Pierdes la pelea', id: 'acc_huir' }
       ]
     }]
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: '⚔️ HINATA BATTLE ⚔️', subtitle: pelea.oponente.name, hasMediaAttachment: false },
-      body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n👹 » ' + pelea.oponente.name + '\n❤️ » Vida: ' + pelea.saludOponente + '/' + pelea.oponente.health + '\n\n👤 » Tú\n❤️ » Vida: ' + pelea.saludUsuario + '/' + (user.maxHealth || 100) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n> Elige una acción' },
+      body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n👹 » ' + pelea.oponente.name + '\n❤️ » Vida: ' + pelea.saludOponente + '/' + pelea.oponente.health + '\n⚔️ » Ataque: ' + pelea.oponente.attack + '\n\n👤 » Tú\n❤️ » Vida: ' + pelea.saludUsuario + '/' + (user.maxHealth || 100) + '\n⚔️ » Ataque: ' + (user.attack || 10) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' },
       footer: { text: '⫏⫏ HINATA BATTLE ✿' },
       nativeFlowMessage: {
         buttons: [{
@@ -58,7 +58,7 @@ let handler = async (m, { conn }) => {
 
   const interactiveMessage = proto.Message.InteractiveMessage.create({
     header: { title: '⚔️ HINATA BATTLE ⚔️', subtitle: 'Elige tu oponente', hasMediaAttachment: false },
-    body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Elige contra quién pelear\n\n👤 » Tu fuerza: ' + (user.attack || 10) + ' ⚔️\n❤️ » Tu vida: ' + (user.health || 100) + '\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' },
+    body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Elige contra quién pelear\n\n👤 » Tu fuerza: ' + (user.attack || 10) + ' ⚔️\n❤️ » Tu vida: ' + (user.health || 100) + '/' + (user.maxHealth || 100) + '\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' },
     footer: { text: '⫏⫏ HINATA BATTLE ✿' },
     nativeFlowMessage: {
       buttons: [{
@@ -89,8 +89,16 @@ handler.before = async (m, { conn }) => {
 
     let who = m.sender
     let user = global.db.data.users[who]
+    if (!user) {
+      global.db.data.users[who] = { diamantes: 0, exp: 0, level: 0, health: 100, maxHealth: 100, attack: 10, defense: 5 }
+      user = global.db.data.users[who]
+    }
 
     if (id.startsWith('fight_')) {
+      if (peleas[who]) {
+        return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Ya estás en combate\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
+      }
+
       let tipo = id.replace('fight_', '')
       let oponente
 
@@ -114,12 +122,12 @@ handler.before = async (m, { conn }) => {
         oponente = bestias[Math.floor(Math.random() * bestias.length)]
       } else if (tipo === 'boss') {
         if ((user.level || 0) < 5) {
-          return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Necesitas nivel 5\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
+          return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Necesitas nivel 5 para BOSS\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
         }
         oponente = bosses[Math.floor(Math.random() * bosses.length)]
       } else if (tipo === 'finalboss') {
         if ((user.level || 0) < 10) {
-          return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Necesitas nivel 10\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
+          return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » Necesitas nivel 10 para FINAL BOSS\n⭐ » Tu nivel: ' + (user.level || 0) + '\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
         }
         oponente = { name: 'DIOS DE LA DESTRUCCIÓN', attack: 60, health: 500, recompensa: 100, exp: 500 }
       }
@@ -130,18 +138,34 @@ handler.before = async (m, { conn }) => {
         saludUsuario: user.health || 100
       }
 
-      let texto = '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n'
-      texto += '💫 » ¡' + oponente.name + ' aparece!\n\n'
-      texto += '👹 » ' + oponente.name + '\n'
-      texto += '❤️ » Vida: ' + oponente.health + '/' + oponente.health + '\n'
-      texto += '⚔️ » Ataque: ' + oponente.attack + '\n\n'
-      texto += '👤 » Tú\n'
-      texto += '❤️ » Vida: ' + (user.health || 100) + '\n'
-      texto += '⚔️ » Ataque: ' + (user.attack || 10) + '\n\n'
-      texto += '🏆 » Recompensa: ' + oponente.recompensa + ' 💎 | ' + oponente.exp + ' exp\n\n'
-      texto += '✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n> Usa #pelear para ver acciones'
+      let sections = [{
+        title: '⚔️ ACCIONES DE COMBATE',
+        rows: [
+          { header: '⚔️ ATACAR', title: 'Golpear al enemigo', description: 'Daño: ' + Math.floor((user.attack || 10) * 0.3) + '-' + (user.attack || 10) + ' ⚔️', id: 'acc_atacar' },
+          { header: '🏃 HUIR', title: 'Escapar del combate', description: 'Pierdes la pelea', id: 'acc_huir' }
+        ]
+      }]
 
-      await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
+      const interactiveMessage = proto.Message.InteractiveMessage.create({
+        header: { title: '⚔️ HINATA BATTLE ⚔️', subtitle: oponente.name, hasMediaAttachment: false },
+        body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n💫 » ¡' + oponente.name + ' aparece!\n\n👹 » ' + oponente.name + '\n❤️ » Vida: ' + oponente.health + '/' + oponente.health + '\n⚔️ » Ataque: ' + oponente.attack + '\n\n👤 » Tú\n❤️ » Vida: ' + (user.health || 100) + '/' + (user.maxHealth || 100) + '\n⚔️ » Ataque: ' + (user.attack || 10) + '\n\n🏆 » Recompensa: ' + oponente.recompensa + ' 💎 | ' + oponente.exp + ' exp\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' },
+        footer: { text: '⫏⫏ HINATA BATTLE ✿' },
+        nativeFlowMessage: {
+          buttons: [{
+            name: 'single_select',
+            buttonParamsJson: JSON.stringify({
+              title: '⚔️ ACCIONES',
+              sections: sections
+            })
+          }]
+        }
+      })
+
+      const msg = generateWAMessageFromContent(m.chat, {
+        viewOnceMessage: { message: { messageContextInfo: {}, interactiveMessage } }
+      }, { quoted: m })
+
+      await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
       return true
     }
 
@@ -153,11 +177,18 @@ handler.before = async (m, { conn }) => {
       if (accion === 'huir') {
         user.health = pelea.saludUsuario
         delete peleas[who]
-        return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n🏃 » Huiste del combate\n👹 » ' + pelea.oponente.name + ' sigue ahí\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
+        return conn.sendMessage(m.chat, { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n🏃 » Huiste del combate\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' }, { quoted: m })
       }
 
       if (accion === 'atacar') {
-        let danoUsuario = Math.floor(Math.random() * (user.attack || 10)) + 1
+        let ataqueMin = Math.floor((user.attack || 10) * 0.3)
+        let ataqueMax = user.attack || 10
+        let danoUsuario = Math.floor(Math.random() * (ataqueMax - ataqueMin + 1)) + ataqueMin
+
+        let opAtaqueMin = Math.floor(pelea.oponente.attack * 0.3)
+        let opAtaqueMax = pelea.oponente.attack
+        let danoOponente = Math.floor(Math.random() * (opAtaqueMax - opAtaqueMin + 1)) + opAtaqueMin
+
         pelea.saludOponente -= danoUsuario
 
         if (pelea.saludOponente <= 0) {
@@ -178,7 +209,6 @@ handler.before = async (m, { conn }) => {
           return conn.sendMessage(m.chat, { text: texto }, { quoted: m })
         }
 
-        let danoOponente = Math.floor(Math.random() * pelea.oponente.attack) + 1
         pelea.saludUsuario -= danoOponente
 
         if (pelea.saludUsuario <= 0) {
@@ -197,12 +227,34 @@ handler.before = async (m, { conn }) => {
 
         user.health = pelea.saludUsuario
 
-        let texto = '⚔️ 「 HINATA BATTLE 」 ⚔️\n\n'
-        texto += '👤 » Tú: -' + danoOponente + ' ❤️ | Vida: ' + pelea.saludUsuario + '\n'
-        texto += '👹 » ' + pelea.oponente.name + ': -' + danoUsuario + ' ❤️ | Vida: ' + pelea.saludOponente + '\n\n'
-        texto += '> Usa #pelear para seguir'
+        let sections = [{
+          title: '⚔️ ACCIONES DE COMBATE',
+          rows: [
+            { header: '⚔️ ATACAR', title: 'Golpear de nuevo', description: 'Daño: ' + Math.floor((user.attack || 10) * 0.3) + '-' + (user.attack || 10) + ' ⚔️', id: 'acc_atacar' },
+            { header: '🏃 HUIR', title: 'Escapar del combate', description: 'Pierdes la pelea', id: 'acc_huir' }
+          ]
+        }]
 
-        await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
+        const interactiveMessage = proto.Message.InteractiveMessage.create({
+          header: { title: '⚔️ HINATA BATTLE ⚔️', subtitle: pelea.oponente.name, hasMediaAttachment: false },
+          body: { text: '⚔️ 「 HINATA BATTLE 」 ⚔️\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦\n\n⚡ » Tu golpe: -' + danoUsuario + ' ❤️\n💥 » Su golpe: -' + danoOponente + ' ❤️\n\n👹 » ' + pelea.oponente.name + ': ' + pelea.saludOponente + '/' + pelea.oponente.health + ' ❤️\n👤 » Tú: ' + pelea.saludUsuario + '/' + (user.maxHealth || 100) + ' ❤️\n\n✦•┈๑⋅⋯ ⋯⋅๑┈•✦' },
+          footer: { text: '⫏⫏ HINATA BATTLE ✿' },
+          nativeFlowMessage: {
+            buttons: [{
+              name: 'single_select',
+              buttonParamsJson: JSON.stringify({
+                title: '⚔️ ACCIONES',
+                sections: sections
+              })
+            }]
+          }
+        })
+
+        const msg = generateWAMessageFromContent(m.chat, {
+          viewOnceMessage: { message: { messageContextInfo: {}, interactiveMessage } }
+        }, { quoted: m })
+
+        await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
         return true
       }
     }
