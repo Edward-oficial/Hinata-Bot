@@ -17,7 +17,7 @@ let handler = async (m, { conn }) => {
   await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
 }
 
-handler.help = ['wallet'[
+handler.help = ['wallet']
 handler.tags = ['rpg']
 handler.command = /^(diamantes|wallet|cartera|dinero|bal|balance)$/i
 handler.desc = 'Muestra tus diamantes'
