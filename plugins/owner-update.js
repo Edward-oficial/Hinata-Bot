@@ -48,9 +48,10 @@ const handler = async (m, { conn }) => {
   })
 }
 
-handler.help = ['update', 'actualizar', 'gitpull']
+handler.help = ['update']
 handler.tags = ['owner']
-handler.command = /^(update|actualizar|gitpull)$/i
+handler.command = /^(update)$/i
+handler.desc = 'Actualiza el bot a la última versión'
 handler.owner = true
 
 export default handler
