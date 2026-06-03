@@ -246,13 +246,6 @@ if (opts['swonly'] && m.chat !== 'status@broadcast')  return
 if (typeof m.text !== 'string')
 m.text = ''
 
-if (m.isGroup) {
-  let chat = global.db.data.chats[m.chat];
-  if (chat?.primaryBot && this?.user?.jid !== chat.primaryBot) {
-    return; 
-  }
-}
-
 if (opts['queque'] && m.text && !(isMods || isPrems)) {
 let queque = this.msgqueque, time = 1000 * 5
 const previousID = queque[queque.length - 1]
@@ -281,22 +274,6 @@ const bot = participants.find(p => p.id === botLid || p.id === botJid) || {}
 const isRAdmin = user?.admin === "superadmin"
 const isAdmin = isRAdmin || user?.admin === "admin"
 const isBotAdmin = !!bot?.admin
-
-// ANTI LINK - HINATA BOT
-if (m.isGroup) {
-let chat = global.db.data.chats[m.chat]
-if (chat?.antiLink && !isAdmin && !isOwner && !isROwner) {
-let linkRegex = /(https?:\/\/|www\.)[^\s]*|chat\.whatsapp\.com\/[^\s]*/gi
-if (linkRegex.test(m.text)) {
-await conn.sendMessage(m.chat, { delete: { remoteJid: m.chat, fromMe: false, id: m.key.id, participant: m.key.participant }})
-await conn.sendMessage(m.chat, { 
-text: '⛩️ 「 HINATA ANTI LINK 」 ⛩️\n\n桜 » @' + m.sender.split('@')[0] + '\n風 » Los enlaces no están permitidos\n花 » Mensaje eliminado\n\n✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧',
-mentions: [m.sender] 
-})
-return
-}
-}
-}
 
 const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
 
