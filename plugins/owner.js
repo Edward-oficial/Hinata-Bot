@@ -41,7 +41,7 @@ const handler = async (m, { conn, command, args, isAdmin, isOwner }) => {
 
   if (type === 'modoadmin') {
     chat.modoadmin = enable
-    return m.reply(`✅ Modo Admin ${enable ? 'activado' : 'desactivado'}.`)
+    return m.reply(`✅ Modo Admin bb ${enable ? 'activado' : 'desactivado'}.`)
   }
 }
 
