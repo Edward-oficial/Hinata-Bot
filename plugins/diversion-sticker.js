@@ -1,110 +1,112 @@
-import fs from 'fs'
-import path from 'path'
-import crypto from 'crypto'
-import fluent_ffmpeg from 'fluent-ffmpeg'
 import fetch from 'node-fetch'
-import { fileTypeFromBuffer } from 'file-type'
-import webp from 'node-webpmux'
+import {
+  generateWAMessageFromContent,
+  proto
+} from '@whiskeysockets/baileys'
 
-const tmp = path.join(process.cwd(), 'tmp')
-if (!fs.existsSync(tmp)) fs.mkdirSync(tmp)
+let handler = async (m, { conn, text }) => {
+  if (!text) {
+    let sections = [{
+      title: '🔥 BÚSQUEDAS RÁPIDAS',
+      rows: [
+        { header: '🐉', title: 'Goku', description: 'Stickers de Goku', id: 'stickerly_Goku' },
+        { header: '🍃', title: 'Naruto', description: 'Stickers de Naruto', id: 'stickerly_Naruto' },
+        { header: '👒', title: 'Luffy', description: 'Stickers de Luffy', id: 'stickerly_Luffy' },
+        { header: '😂', title: 'Meme', description: 'Stickers de memes', id: 'stickerly_Meme' }
+      ]
+    }]
 
-async function addExif(webpSticker, packname, author, categories = [''], extra = {}) {
-  const img = new webp.Image()
-  const stickerPackId = crypto.randomBytes(32).toString('hex')
-  const json = {
-    'sticker-pack-id': stickerPackId,
-    'sticker-pack-name': packname,
-    'sticker-pack-publisher': author,
-    'emojis': categories,
-    ...extra
-  }
-  const exifAttr = Buffer.from([
-    0x49,0x49,0x2A,0x00,0x08,0x00,0x00,0x00,
-    0x01,0x00,0x41,0x57,0x07,0x00,0x00,0x00,
-    0x00,0x00,0x16,0x00,0x00,0x00
-  ])
-  const jsonBuffer = Buffer.from(JSON.stringify(json), 'utf8')
-  const exif = Buffer.concat([exifAttr, jsonBuffer])
-  exif.writeUIntLE(jsonBuffer.length, 14, 4)
-  await img.load(webpSticker)
-  img.exif = exif
-  return await img.save(null)
-}
+    const interactiveMessage = proto.Message.InteractiveMessage.create({
+      header: { title: '🌟 HINATA STICKERLY 🌟', subtitle: 'Busca stickers animados', hasMediaAttachment: false },
+      body: { text: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » Busca stickers en Stickerly\n\n> #stickerly <búsqueda>\n> #stickerly Goku' },
+      footer: { text: '⫏⫏ HINATA BOT ✿' },
+      nativeFlowMessage: {
+        buttons: [{
+          name: 'single_select',
+          buttonParamsJson: JSON.stringify({
+            title: '🔍 BÚSQUEDAS',
+            sections: sections
+          })
+        }]
+      }
+    })
 
-async function sticker(img, url, packname, author) {
-  if (url) {
-    const res = await fetch(url)
-    if (res.status !== 200) throw await res.text()
-    img = await res.buffer()
-  }
-
-  const type = await fileTypeFromBuffer(img) || { mime: 'application/octet-stream', ext: 'bin' }
-  if (type.ext === 'bin') throw new Error('Tipo de archivo inválido')
-
-  const tmpFile = path.join(tmp, `${Date.now()}.${type.ext}`)
-  const outFile = `${tmpFile}.webp`
-  await fs.promises.writeFile(tmpFile, img)
-
-  await new Promise((resolve, reject) => {
-    const ff = /video/i.test(type.mime)
-      ? fluent_ffmpeg(tmpFile).inputFormat(type.ext)
-      : fluent_ffmpeg(tmpFile).input(tmpFile)
-
-    ff.addOutputOptions([
-      `-vcodec`, `libwebp`, `-vf`,
-      `scale='min(512,iw)':min'(512,ih)':force_original_aspect_ratio=decrease,fps=15, pad=512:512:-1:-1:color=white@0.0, split [a][b]; [a] palettegen=reserve_transparent=on:transparency_color=ffffff [p]; [b][p] paletteuse`
-    ])
-      .toFormat('webp')
-      .save(outFile)
-      .on('error', reject)
-      .on('end', resolve)
-  })
-
-  const buffer = await fs.promises.readFile(outFile)
-  fs.promises.unlink(tmpFile).catch(() => {})
-  fs.promises.unlink(outFile).catch(() => {})
-
-  return await addExif(buffer, packname, author)
-}
-
-const handler = async (m, { conn }) => {
-  const q = m.quoted ? m.quoted : m
-  const mime = (q.msg || q).mimetype || ''
-
-  if (!/image|video/.test(mime)) {
-    return conn.sendMessage(m.chat, { 
-      text: '𖣔 「 HINATA STICKER 」 ˚ʚ♡ɞ˚\n\n💫 » Responde a una imagen o video\n\n> Usa #s respondiendo a una foto' 
+    const msg = generateWAMessageFromContent(m.chat, {
+      viewOnceMessage: { message: { messageContextInfo: {}, interactiveMessage } }
     }, { quoted: m })
+
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+    return
   }
 
-  await m.react('⏳')
+  await m.react('🔍')
 
   try {
-    const media = await q.download()
-    if (!media) throw new Error('No se pudo descargar')
+    let searchUrl = `https://api-faa.my.id/faa/stickerly?query=${encodeURIComponent(text)}`
+    let res = await fetch(searchUrl)
+    let json = await res.json()
 
-    const packname = global.packname || '🌸 HINATA BOT'
-    const author = global.author || 'EL VIGILANTE & BRAYANRK'
+    if (!json.status || !json.results?.length) {
+      await m.react('❌')
+      return conn.sendMessage(m.chat, {
+        text: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » Sin resultados'
+      }, { quoted: m })
+    }
 
-    const stiker = await sticker(media, false, packname, author)
+    let random = json.results[Math.floor(Math.random() * json.results.length)]
 
-    if (!Buffer.isBuffer(stiker)) throw new Error('No se pudo generar')
-
-    await conn.sendMessage(m.chat, { sticker: stiker }, { quoted: m })
-    await m.react('✅')
-  } catch (e) {
-    console.error(e)
-    await m.react('❌')
-    await conn.sendMessage(m.chat, { 
-      text: '❌ Error al crear sticker' 
+    await conn.sendMessage(m.chat, {
+      video: { url: random.url },
+      caption: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » ' + text + '\n📦 » ' + json.total + ' resultados',
+      gifPlayback: true
     }, { quoted: m })
+
+    await m.react('✅')
+
+  } catch (e) {
+    console.log(e)
+    await m.react('❌')
+    conn.sendMessage(m.chat, { text: '❌ Error al buscar' }, { quoted: m })
   }
 }
 
-handler.help = ['sticker']
-handler.tags = ['diversion']
-handler.command = /^(sticker|s|stick)$/i
-handler.desc = 'Crea sticker desde imagen o video'
+handler.before = async (m, { conn }) => {
+  const nativeFlow = m.message?.interactiveResponseMessage?.nativeFlowResponseMessage
+  if (!nativeFlow) return false
+
+  try {
+    const data = JSON.parse(nativeFlow.paramsJson || '{}')
+    const id = data.id || data.selectedId || data.selectedRowId || null
+    if (!id || !id.startsWith('stickerly_')) return false
+
+    let query = id.replace('stickerly_', '')
+    let searchUrl = `https://api-faa.my.id/faa/stickerly?query=${encodeURIComponent(query)}`
+    let res = await fetch(searchUrl)
+    let json = await res.json()
+
+    if (!json.status || !json.results?.length) {
+      return conn.sendMessage(m.chat, { text: '❌ Sin resultados' }, { quoted: m })
+    }
+
+    let random = json.results[Math.floor(Math.random() * json.results.length)]
+
+    await conn.sendMessage(m.chat, {
+      video: { url: random.url },
+      caption: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » ' + query + '\n📦 » ' + json.total + ' resultados',
+      gifPlayback: true
+    }, { quoted: m })
+
+    return true
+
+  } catch (e) {
+    console.log(e)
+    return false
+  }
+}
+
+handler.help = ['stickerly']
+handler.tags = ['downloader']
+handler.command = /^(stickerly|sticker|stickers)$/i
+handler.desc = 'Busca stickers en Stickerly'
 
 export default handler
