@@ -133,7 +133,7 @@ let handler = async (m, { conn, usedPrefix: _p, command }) => {
 
 handler.help = ['menu']
 handler.tags = ['main']
-handler.command = /^(menu|menú|help)(rpg|group|game|gacha|serbot|owner|downloader|info|main)?$/i
+handler.command = /^(menu|menú|help)(rpg|group|diversion|game|gacha|serbot|owner|downloader|info|main)?$/i
 handler.register = false
 handler.desc = 'Muestra el menú'
 
