@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 
-let cooldownsClaim = {}
+let cooldownsRw = {}
 
 let handler = async (m, { conn }) => {
   let who = m.sender
@@ -12,14 +12,14 @@ let handler = async (m, { conn }) => {
   }
 
   let now = Date.now()
-  let cd = cooldownsClaim[who] || 0
+  let cd = cooldownsRw[who] || 0
   let tiempoRestante = Math.ceil((cd - now) / 1000)
 
   if (now < cd) {
     let minutos = Math.floor(tiempoRestante / 60)
     let segundos = tiempoRestante % 60
     return conn.sendMessage(m.chat, {
-      text: '𖣔 「 HINATA CLAIM 」 ˚ʚ♡ɞ˚\n\n💫 » Ya reclamaste\n⏳ » ' + minutos + 'm ' + segundos + 's\n\n> Vuelve pronto'
+      text: '𖣔 「 HINATA RW 」 ˚ʚ♡ɞ˚\n\n💫 » Espera ' + minutos + 'm ' + segundos + 's'
     }, { quoted: m })
   }
 
@@ -27,7 +27,7 @@ let handler = async (m, { conn }) => {
 
   if (!fs.existsSync(gachaPath)) {
     return conn.sendMessage(m.chat, {
-      text: '𖣔 「 HINATA CLAIM 」 ˚ʚ♡ɞ˚\n\n💫 » No hay personajes\n\n> Agrega personajes a gacha.json'
+      text: '𖣔 「 HINATA RW 」 ˚ʚ♡ɞ˚\n\n💫 » No hay personajes\n\n> Agrega personajes a gacha.json'
     }, { quoted: m })
   }
 
@@ -52,20 +52,20 @@ let handler = async (m, { conn }) => {
   let char = pool[Math.floor(Math.random() * pool.length)]
 
   user.inventory.push(char.name)
-  cooldownsClaim[who] = now + 300000
+  cooldownsRw[who] = now + 300000
 
   let rarityEmojis = { 'SSR': '🌟', 'SR': '⭐', 'R': '✨' }
   let rarityGemas = { 'SSR': 10, 'SR': 5, 'R': 2 }
   user.diamantes = (user.diamantes || 0) + (rarityGemas[rarity] || 0)
 
-  let texto = '𖣔 「 HINATA CLAIM 」 ˚ʚ♡ɞ˚\n\n'
+  let texto = '𖣔 「 HINATA RW 」 ˚ʚ♡ɞ˚\n\n'
   texto += '  💫 Personaje obtenido\n\n'
   texto += '  ✦ ' + char.name + ' ✦\n'
   texto += '  ' + rarityEmojis[rarity] + ' Rareza: ' + rarity + '\n'
   texto += '  ⚔️ ' + char.attack + ' | 🛡️ ' + char.defense + ' | ❤️ ' + char.health + '\n'
   texto += '  💎 +' + (rarityGemas[rarity] || 0) + ' diamantes\n'
   texto += '  🎒 Guardado en inventario\n\n'
-  texto += '> ⏳ 5 minutos | #claim'
+  texto += '> ⏳ 5 minutos | #rw'
 
   await conn.sendMessage(m.chat, {
     image: { url: char.image },
@@ -73,9 +73,9 @@ let handler = async (m, { conn }) => {
   }, { quoted: m })
 }
 
-handler.help = ['claim']
+handler.help = ['rw']
 handler.tags = ['gacha']
-handler.command = /^(claim|reclamar)$/i
-handler.desc = 'Reclama personaje cada 5 min'
+handler.command = /^(rw|roll|gacha)$/i
+handler.desc = 'Tira de la gacha cada 5 min'
 
 export default handler
