@@ -22,7 +22,7 @@ const handler = async (m, { conn }) => {
 
     if (stdout.includes('Already up to date')) {
       await conn.sendMessage(m.chat, {
-        image: { url: 'https://files.catbox.moe/a50kwf.png' },
+        image: { url: 'https://files.catbox.moe/5tegkb.png' },
         caption: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\nׄㅤ𑁍ࠬܓε(´｡•᎑•`)っ ᜒ ✅ Ya estás en la última versión de HINATA BOT\n\n> Solicitado por @' + who.split('@')[0],
         mentions: [who]
       }, { quoted: m })
@@ -41,7 +41,7 @@ const handler = async (m, { conn }) => {
     texto += '\n> Solicitado por @' + who.split('@')[0]
 
     await conn.sendMessage(m.chat, {
-      image: { url: 'https://files.catbox.moe/a50kwf.png' },
+      image: { url: 'https://files.catbox.moe/5tegkb.png' },
       caption: texto,
       mentions: [who]
     }, { quoted: m })
