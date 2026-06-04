@@ -13,7 +13,7 @@ global.prems = []
 global.namebot = 'Hinata-Bot'
 global.packname = 'Hinata Bot 🌸'
 global.author = 'El vigilante & Brayan RK| © 𝟸𝟶𝟸𝟼 '
-global.moneda = '𝙴𝙻𝚈𝚂𝚂𝙸𝙰 𝙼𝙳'
+global.moneda = 'Hinata'
 
 global.libreria = 'Baileys'
 global.baileys = 'V 6.7.16'
