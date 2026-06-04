@@ -51,7 +51,7 @@ const handler = async (m, { conn }) => {
 handler.help = ['update']
 handler.tags = ['owner']
 handler.command = /^(update)$/i
-handler.desc = 'Actualiza el bot a la última versión'
+handler.desc = 'Actualiza la bot a la última versión'
 handler.owner = true
 
 export default handler
