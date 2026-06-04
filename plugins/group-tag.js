@@ -37,7 +37,7 @@ let handler = async (m, { conn, text }) => {
 handler.help = ['tag']
 handler.tags = ['group']
 handler.command = /^(tag)$/i
-handler.desc = 'Envía mensaje mencionando'
+handler.desc = 'Envía mensaje'
 handler.group = true
 
 export default handler
