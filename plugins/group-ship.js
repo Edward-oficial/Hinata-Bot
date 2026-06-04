@@ -66,7 +66,7 @@ let handler = async (m, { conn }) => {
 }
 
 handler.help = ['ship']
-handler.tags = ['group']
+handler.tags = ['diversion']
 handler.command = /^(ship|amor|love|match)$/i
 handler.desc = 'Calcula el amor entre dos personas'
 handler.group = true
