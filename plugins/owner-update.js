@@ -2,43 +2,85 @@ import { exec } from 'child_process'
 
 const handler = async (m, { conn }) => {
   let who = m.sender
-  
-  await conn.sendMessage(m.chat, { text: '⏳ Actualizando HINATA BOT...' }, { quoted: m })
+  let name = await conn.getName(who)
+
+  await conn.sendMessage(m.chat, { text: '⏳ Buscando actualizaciones para HINATA BOT...' }, { quoted: m })
 
   exec('git pull', async (err, stdout, stderr) => {
     if (err) {
       let error = err.message
       if (error.includes('not a git repository')) {
-        await conn.sendMessage(m.chat, { text: '❌ No es un repositorio git' }, { quoted: m })
+        await conn.sendMessage(m.chat, { text: '❌ No es un repositorio git\n\n> Clona el bot con git clone' }, { quoted: m })
         return
       }
       if (error.includes('Could not resolve host')) {
-        await conn.sendMessage(m.chat, { text: '❌ Sin conexión a internet' }, { quoted: m })
+        await conn.sendMessage(m.chat, { text: '❌ Sin conexión a internet\n\n> Verifica tu conexión' }, { quoted: m })
         return
       }
-      await conn.sendMessage(m.chat, { text: '❌ Error:\n' + error }, { quoted: m })
+      if (error.includes('Merge conflict')) {
+        await conn.sendMessage(m.chat, { text: '⚠️ Conflicto de fusión detectado\n\n> Usa #exec git stash && git pull --force' }, { quoted: m })
+        return
+      }
+      if (error.includes('Please commit')) {
+        await conn.sendMessage(m.chat, { text: '⚠️ Tienes cambios locales sin guardar\n\n> Usa #exec git stash && git pull' }, { quoted: m })
+        return
+      }
+      await conn.sendMessage(m.chat, { text: '❌ Error inesperado:\n' + error }, { quoted: m })
       return
     }
 
     if (stdout.includes('Already up to date')) {
       await conn.sendMessage(m.chat, {
         image: { url: 'https://files.catbox.moe/5tegkb.png' },
-        caption: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\nׄㅤ𑁍ࠬܓε(´｡•᎑•`)っ ᜒ ✅ Ya estás en la última versión de HINATA BOT\n\n> Solicitado por @' + who.split('@')[0],
+        caption: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n✨ Hinata ya está en su mejor versión\n🌸 No hay actualizaciones pendientes\n\n> Solicitado por @' + who.split('@')[0],
         mentions: [who]
       }, { quoted: m })
       return
     }
 
-    let cambios = stdout.match(/\d+ files? changed/g)
-    let inserciones = stdout.match(/\d+ insertions?/g)
-    let borrados = stdout.match(/\d+ deletions?/g)
+    let creados = stdout.match(/create mode \d+ (.+)/g) || []
+    let eliminados = stdout.match(/delete mode \d+ (.+)/g) || []
 
-    let texto = '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ACTUALIZADO ㅤ֢ㅤׄㅤׅ\n\n'
-    texto += 'ׄㅤ𑁍ࠬܓε(´｡•᎑•`)っ ᜒ ✅ Actualización exitosa\n\n'
-    if (cambios) texto += '📁 ' + cambios.join(', ') + '\n'
-    if (inserciones) texto += '➕ ' + inserciones.join(', ') + '\n'
-    if (borrados) texto += '➖ ' + borrados.join(', ') + '\n'
-    texto += '\n> Solicitado por @' + who.split('@')[0]
+    let filesCreados = creados.map(c => c.split(' ').pop())
+    let filesEliminados = eliminados.map(c => c.split(' ').pop())
+    let filesCambiados = stdout.match(/\| (\d+) .*/g) || []
+
+    let texto = '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ACTUALIZADA ㅤ֢ㅤׄㅤׅ\n\n'
+    texto += '🌸 Hinata se ha renovado\n\n'
+
+    if (filesCreados.length > 0) {
+      texto += '✨ *Nuevos archivos:*\n'
+      for (let file of filesCreados) {
+        texto += '  ❀ ' + file + '\n'
+      }
+      texto += '\n'
+    }
+
+    if (filesCambiados.length > 0) {
+      texto += '📝 *Archivos modificados:*\n'
+      let count = filesCambiados.length
+      texto += '  ❀ ' + count + ' archivo(s) actualizado(s)\n\n'
+    }
+
+    if (filesEliminados.length > 0) {
+      texto += '🗑️ *Archivos eliminados:*\n'
+      for (let file of filesEliminados) {
+        texto += '  ❀ ' + file + '\n'
+      }
+      texto += '\n'
+    }
+
+    let summary = stdout.match(/\d+ files? changed, \d+ insertions?\(\+\), \d+ deletions?\(-\)/)
+    if (summary) {
+      let [changed, inserted, deleted] = summary[0].match(/\d+/g)
+      texto += '📊 *Resumen:*\n'
+      texto += '  ❀ ' + changed + ' archivo(s) cambiado(s)\n'
+      texto += '  ❀ +' + inserted + ' línea(s) agregada(s)\n'
+      texto += '  ❀ -' + deleted + ' línea(s) eliminada(s)\n\n'
+    }
+
+    texto += '> Actualizado por @' + who.split('@')[0] + '\n'
+    texto += '> Reinicia la bot para aplicar cambios'
 
     await conn.sendMessage(m.chat, {
       image: { url: 'https://files.catbox.moe/5tegkb.png' },
@@ -50,8 +92,8 @@ const handler = async (m, { conn }) => {
 
 handler.help = ['update']
 handler.tags = ['owner']
-handler.command = /^(update)$/i
-handler.desc = 'Actualiza la bot a la última versión'
+handler.command = /^(update|actualizar)$/i
+handler.desc = 'Actualiza Hinata a la última versión'
 handler.owner = true
 
 export default handler
