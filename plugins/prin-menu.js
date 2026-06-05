@@ -21,7 +21,7 @@ const bannerCategory = {
   main: 'https://files.catbox.moe/r60c8l.jpg',
   group: 'https://files.catbox.moe/3tlaq0.png',
   rpg: 'https://files.catbox.moe/e858ul.png',
-  game: 'https://files.catbox.moe/1erk1n.png',
+  game: 'https://i.ibb.co/r2wQ4gBD/play.png',
   gacha: 'https://files.catbox.moe/rlnc3s.png',
   serbot: 'https://files.catbox.moe/r60c8l.jpg',
   owner: 'https://files.catbox.moe/52nm0t.png',
