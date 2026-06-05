@@ -5,7 +5,7 @@ import {
   proto
 } from '@whiskeysockets/baileys'
 
-const VIDEO_QUALITY = '720p'
+const VIDEO_QUALITY = '360p'
 const DELIRIUS_API = 'https://api.delirius.store'
 
 const _processing = new Set()
