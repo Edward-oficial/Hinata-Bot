@@ -92,6 +92,14 @@ handler.all = async function (m, { conn }) {
   const botJid  = connRef?.user?.id || connRef?.user?.jid || ''
   const botNum  = botJid.split('@')[0].split(':')[0]
 
+  console.log('[LID DEBUG]', {
+    botJid,
+    botNum,
+    botLidCache,
+    mentionedJid: m.mentionedJid
+  })
+
+
   if (!botLidCache && m.isGroup) {
     try {
       const meta = await connRef.groupMetadata(m.chat)
