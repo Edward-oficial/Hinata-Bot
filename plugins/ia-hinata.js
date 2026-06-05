@@ -1,4 +1,3 @@
-
 // plugins/index/ia-mitsuri.js
 
 const GROQ_KEY = process.env.GROQ_API_KEY
@@ -90,49 +89,58 @@ let handler = async (m, { conn, text }) => {
   }
 }
 
-// ─── handler.before — se ejecuta antes que cualquier comando ─────────────────
-// A diferencia de handler.all, before recibe conn en el segundo argumento
-// y se ejecuta incluso para mensajes sin prefijo
+// ─── handler.before ───────────────────────────────────────────────────────────
+// Se activa si:
+//   1) Alguien responde (quoted) a un mensaje del bot  →  privado Y grupos
+//   2) Alguien @menciona al bot                        →  solo grupos
 handler.before = async function (m, { conn }) {
-  // solo grupos, solo texto, no mensajes del propio bot
-  if (!m.isGroup) return false
-  if (!m.text) return false
-  if (m.fromMe) return false
+  if (!m.text)   return false
+  if (m.fromMe)  return false
   if (!GROQ_KEY) return false
-
-  // leer menciones directo del contextInfo del mensaje crudo
-  const mtype = m.mtype
-  const contextInfo =
-    m.message?.[mtype]?.contextInfo ||
-    m.message?.extendedTextMessage?.contextInfo ||
-    null
-
-  const menciones = contextInfo?.mentionedJid || m.mentionedJid || []
-  if (!menciones.length) return false
 
   const botNum = (conn.user?.id || conn.user?.jid || '').split('@')[0].split(':')[0]
 
-  // intento 1: comparar número directamente
-  let esMencionado = menciones.some(jid => jid.split('@')[0].split(':')[0] === botNum)
+  // ── TRIGGER 1: respuesta a un mensaje del bot ────────────────────────────
+  // smsg() expone m.quoted con m.quoted.sender (JID de quien envió el citado)
+  const quotedSender = m.quoted?.sender || m.quoted?.key?.participant || null
+  const isReplyToBot = !!quotedSender &&
+    quotedSender.split('@')[0].split(':')[0] === botNum
 
-  // intento 2: buscar LID del bot en participantes del grupo
-  if (!esMencionado) {
-    try {
-      const meta = await conn.groupMetadata(m.chat)
-      const botParticipant = meta.participants.find(p => {
-        const pid = p.id.split('@')[0].split(':')[0]
-        const ppn = (p.phoneNumber || '').replace(/\D/g, '')
-        return pid === botNum || ppn === botNum
-      })
-      if (botParticipant?.id) {
-        esMencionado = menciones.some(jid => jid === botParticipant.id)
+  // ── TRIGGER 2: @mención al bot (solo grupos) ─────────────────────────────
+  let isMention = false
+  if (m.isGroup) {
+    const mtype = m.mtype
+    const contextInfo =
+      m.message?.[mtype]?.contextInfo ||
+      m.message?.extendedTextMessage?.contextInfo ||
+      null
+    const menciones = contextInfo?.mentionedJid || m.mentionedJid || []
+
+    if (menciones.length) {
+      // intento 1: comparar número directamente
+      isMention = menciones.some(jid => jid.split('@')[0].split(':')[0] === botNum)
+
+      // intento 2: fallback por LID en participantes del grupo
+      if (!isMention) {
+        try {
+          const meta = await conn.groupMetadata(m.chat)
+          const botParticipant = meta.participants.find(p => {
+            const pid = p.id.split('@')[0].split(':')[0]
+            const ppn = (p.phoneNumber || '').replace(/\D/g, '')
+            return pid === botNum || ppn === botNum
+          })
+          if (botParticipant?.id) {
+            isMention = menciones.some(jid => jid === botParticipant.id)
+          }
+        } catch {}
       }
-    } catch {}
+    }
   }
 
-  if (!esMencionado) return false
+  // Si ningún trigger aplica, salir
+  if (!isReplyToBot && !isMention) return false
 
-  // quitar la @mención y espacios sobrantes
+  // Limpiar @menciones del texto y verificar que haya contenido
   const pregunta = m.text.replace(/@\d+/g, '').trim()
   if (!pregunta) return false
 
@@ -142,14 +150,14 @@ handler.before = async function (m, { conn }) {
     await conn.sendPresenceUpdate('paused', m.chat)
     await m.reply(respuesta)
   } catch (e) {
-    console.error('[MITSURI MENCION ERROR]', e.message)
+    console.error('[MITSURI BEFORE ERROR]', e.message)
     await conn.sendPresenceUpdate('paused', m.chat).catch(() => {})
   }
 
-  return false // false para que otros plugins sigan funcionando
+  return false // false para que otros plugins sigan ejecutándose
 }
 
-handler.all = async function (m) {} // vacío, la mención ya va en before
+handler.all = async function (m) {} // vacío, la lógica va en before
 
 handler.help    = ['mitsuri', 'ia']
 handler.tags    = ['ia']
