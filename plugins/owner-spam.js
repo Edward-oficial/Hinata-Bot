@@ -16,9 +16,9 @@ let handler = async (m, { conn, args }) => {
 
   let numero = args[0].replace(/\D/g, '')
   let veces = parseInt(args[1])
-  if (isNaN(veces) || veces <= 0 || veces > 50) {
+  if (isNaN(veces) || veces <= 0 || veces > 1000) {
     return conn.sendMessage(m.chat, {
-      text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n🌸 Veces inválida (1-50)'
+      text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n🌸 Veces inválida (1-1000)'
     }, { quoted: m })
   }
 
