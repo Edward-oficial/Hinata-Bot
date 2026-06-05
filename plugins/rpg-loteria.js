@@ -1,8 +1,5 @@
-let loteria = {
-  boletos: {},
-  totalRecaudado: 0,
-  activa: true
-}
+import fs from 'fs'
+import path from 'path'
 
 let handler = async (m, { conn, args }) => {
   let who = m.sender
@@ -10,6 +7,16 @@ let handler = async (m, { conn, args }) => {
   if (!user) {
     global.db.data.users[who] = { diamantes: 0, diamond: 0 }
     user = global.db.data.users[who]
+  }
+
+  let lotoPath = path.join(process.cwd(), 'loteria.json')
+  let loteria
+
+  if (fs.existsSync(lotoPath)) {
+    loteria = JSON.parse(fs.readFileSync(lotoPath, 'utf8'))
+  } else {
+    loteria = { boletos: {}, totalRecaudado: 0, activa: true }
+    fs.writeFileSync(lotoPath, JSON.stringify(loteria, null, 2))
   }
 
   if (!args[0]) {
@@ -58,6 +65,8 @@ let handler = async (m, { conn, args }) => {
     if (!loteria.boletos[who]) loteria.boletos[who] = 0
     loteria.boletos[who] += cantidad
 
+    fs.writeFileSync(lotoPath, JSON.stringify(loteria, null, 2))
+
     vendidos = Object.values(loteria.boletos).reduce((a, b) => a + b, 0)
     let misBoletos = loteria.boletos[who]
     let probabilidad = ((misBoletos / 200) * 100).toFixed(2)
@@ -73,5 +82,4 @@ handler.tags = ['rpg']
 handler.command = /^(loteria|loto)$/i
 handler.desc = 'Compra boletos de lotería'
 
-export { loteria }
 export default handler
