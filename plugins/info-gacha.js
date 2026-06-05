@@ -1,43 +1,30 @@
 let handler = async (m, { conn }) => {
-  let texto = '❀ HINATA INFO RPG ❀\n\n'
-  texto += 'El sistema RPG de Hinata te permite vivir una aventura ninja completa.\n\n'
-  texto += 'COMANDOS DISPONIBLES:\n\n'
-  texto += '❀ work, work2 - Trabaja para ganar 💎\n'
-  texto += '❀ daily - Recompensa diaria\n'
-  texto += '❀ weekly - 500 💎 cada 7 días\n'
-  texto += '❀ monthly - 3000 💎 cada 30 días\n'
-  texto += '❀ fish - Pesca para ganar 💎\n'
-  texto += '❀ crime - Comete crímenes\n'
-  texto += '❀ cazar - Caza animales\n'
-  texto += '❀ minar - Extrae minerales\n'
-  texto += '❀ cofre - Abre cofre cada hora\n'
-  texto += '❀ aventura - Explora mazmorras\n'
-  texto += '❀ slut - Trabaja en las calles\n'
-  texto += '❀ casino - Apuesta colores\n'
-  texto += '❀ ruleta - Ruleta x2, x10\n'
-  texto += '❀ steal - Roba a otros usuarios\n'
-  texto += '❀ pelear - Batalla contra bestias y bosses\n'
-  texto += '❀ curar - Cura tu vida por 1 💎\n'
-  texto += '❀ levelup - Sube de nivel\n'
-  texto += '❀ clase - Cambia de clase\n'
-  texto += '❀ perfil - Tus estadísticas completas\n'
-  texto += '❀ banco, dep, ret - Maneja tu banco\n'
-  texto += '❀ pay - Transfiere 💎 a otros\n'
-  texto += '❀ top - Ranking global\n'
-  texto += '❀ weekly - Ranking semanal\n'
-  texto += '❀ monthly - Ranking mensual\n\n'
-  texto += 'CONSEJOS:\n'
-  texto += '❀ Guarda tus 💎 en el banco para protegerlos de robos\n'
-  texto += '❀ Sube de nivel para desbloquear mejores clases\n'
-  texto += '❀ Usa curar antes de pelear contra bosses fuertes\n\n'
-  texto += '> Usa #menu para ver todos los comandos'
+  let texto = '❀ HINATA INFO GACHA ❀\n\n'
+  texto += 'La gacha de Hinata te permite coleccionar personajes de anime.\n\n'
+  texto += 'COMANDOS:\n\n'
+  texto += '❀ rw - Tira gacha 1 (personajes con rarezas SSR/SR/R)\n'
+  texto += '❀ claim - Reclama tu último personaje de #rw\n'
+  texto += '❀ rw2 - Tira gacha 2 (personajes de anime real)\n'
+  texto += '❀ inventario - Ver colección 1\n'
+  texto += '❀ inventario2 - Ver colección 2\n'
+  texto += '❀ coleccion - Progreso completo\n'
+  texto += '❀ vender - Vende personajes por 💎\n'
+  texto += '❀ mercado - Compra y vende entre usuarios\n'
+  texto += '❀ regalar - Regala personajes\n\n'
+  texto += 'RAREZAS:\n'
+  texto += '❀ SSR (2%) - Los más poderosos\n'
+  texto += '❀ SR (13%) - Fuertes\n'
+  texto += '❀ R (85%) - Comunes\n\n'
+  texto += 'PRECIOS DE VENTA:\n'
+  texto += '❀ SSR: 10 💎 | SR: 5 💎 | R: 2 💎\n\n'
+  texto += '> Usa #suertegacha para eventos especiales'
 
   await conn.sendMessage(m.chat, { text: texto }, { quoted: m })
 }
 
-handler.help = ['inforpg']
+handler.help = ['infogacha']
 handler.tags = ['info']
-handler.command = /^(inforpg|rpginfo|guia)$/i
-handler.desc = 'Guía del sistema RPG'
+handler.command = /^(infogacha|gachainfo)$/i
+handler.desc = 'Guía del sistema gacha'
 
 export default handler
