@@ -15,6 +15,6 @@ handler.help = ['tagall']
 handler.tags = ['group']
 handler.command = /^(tagall|todos|all)$/i
 handler.desc = 'Menciona a todos'
-handler.admin = tagall
+handler.admin = true
 
 export default handler
