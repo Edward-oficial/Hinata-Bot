@@ -61,7 +61,7 @@ handler.command = ['on', 'off']
 handler.group = true
 handler.admin = true
 handler.tags = ['group']
-handler.help = ['on <función>', 'off <función>']
+handler.help = ['on welcome', 'off welcome']
 
 // === MIDDLEWARE ===
 handler.before = async (m, { conn }) => {
