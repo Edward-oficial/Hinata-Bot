@@ -1,7 +1,7 @@
 {
-  "name": "Elyssia-Bot-MD",
-  "version": "1.0.0",
-  "description": "Elyssia kame house Infinity",
+  "name": "hinata-bot-md",
+  "version": "2.2.0",
+  "description": "La kunoichi del Clan Hyuga ahora en tu WhatsApp",
   "main": "index.js",
   "type": "module",
   "directories": {
@@ -12,21 +12,22 @@
   "scripts": {
     "start": "node index.js"
   },
-  "homepage": "https://github.com/dvwilker/Gohan-beast",
+  "homepage": "https://github.com/ElvigilanteDv/Hinata-Bot",
   "author": {
-    "name": "dvwilker"
+    "name": "El Vigilante & BrayanRK"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dvwilker/Gohan-beast.git"
+    "url": "git+https://github.com/ElvigilanteDv/Hinata-Bot.git"
   },
   "bugs": {
-    "url": "https://github.com/dvwilker/Gohan-beast/issues"
+    "url": "https://github.com/ElvigilanteDv/Hinata-Bot/issues"
   },
   "license": "MIT-LICENSE",
   "dependencies": {
     "@hapi/boom": "^10.0.1",
     "@whiskeysockets/baileys": "github:ElvigilanteDv/bails.git",
+    "aptoide-scraper": "^1.0.0",
     "awesome-phonenumber": "^3.4.0",
     "axios": "^1.1.2",
     "acrcloud": "^1.4.0",
