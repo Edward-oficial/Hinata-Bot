@@ -1,181 +1,253 @@
-```markdown
 <div align="center">
-  <img src="https://files.catbox.moe/yp1tti.png" width="300">
-  
-  # 𓆩⚝𓆪 HINATA BOT 𓍯 𓆩⚝𓆪
+  <img src="https://files.catbox.moe/yp1tti.png" width="300">𓆩⚝𓆪 HINATA BOT 𓍯 𓆩⚝𓆪
 
-  *La kunoichi del Clan Hyuga ahora en tu WhatsApp*
+La kunoichi del Clan Hyuga ahora en tu WhatsApp
 
-  [![WhatsApp](https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)](https://wa.me/59177474230)
-  [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/ElvigilanteDv/Hinata-Bot)
-  [![Versión](https://img.shields.io/badge/versión-2.2.0-blue?style=for-the-badge)](https://github.com/ElvigilanteDv/Hinata-Bot)
-  [![Comandos](https://img.shields.io/badge/comandos-100+-purple?style=for-the-badge)](https://github.com/ElvigilanteDv/Hinata-Bot)
-</div>
+"Version" (https://img.shields.io/badge/Version-2.2.0-blue?style=for-the-badge)
+"Commands" (https://img.shields.io/badge/Commands-113+-purple?style=for-the-badge)
+"NodeJS" (https://img.shields.io/badge/Node.js-21+-green?style=for-the-badge)
+"License" (https://img.shields.io/badge/License-Custom-red?style=for-the-badge)
 
----
+</div>---
 
-<div align="center">
+👨‍💻 DESARROLLADORES
 
-### 🧑‍💻 EL VIGILANTE &nbsp;&nbsp;|&nbsp;&nbsp; 🧑‍💻 BRAYANRK
-*Honduras 🇭🇳 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Colombia 🇨🇴*
+<div align="center">EL VIGILANTE 🇭🇳
 
-</div>
+Fundador y desarrollador principal
 
----
+BRAYANRK 🇨🇴
 
-## ✦ SOBRE HINATA BOT
+Co-desarrollador y colaborador oficial
 
-Hinata Bot es mucho más que un bot. Es **Hinata Hyuga** en persona: tímida con desconocidos, cariñosa con su creador, y siempre lista para ayudar. Con más de **100 comandos** distribuidos en **11 categorías**, ofrece una experiencia completa que combina **RPG**, **economía**, **gacha**, **juegos**, **descargas** y una **IA conversacional** que responde por mención.
+</div>---
 
----
+✦ SOBRE HINATA BOT
 
-## ✦ CARACTERÍSTICAS DESTACADAS
+Hinata Bot es un bot avanzado de WhatsApp inspirado en Hinata Hyuga. Combina sistemas RPG, economía virtual, gacha, minijuegos, descargas multimedia y una inteligencia artificial conversacional con personalidad propia.
 
-<table>
-<tr><td width="50%">
-
-### ⚔️ RPG COMPLETO
-Sistema de niveles, experiencia, clases (Novato a Samurái), peleas contra bestias y bosses, trabajos, crímenes, pesca, caza, minería, aventuras y más.
-
-### 💎 ECONOMÍA VIRTUAL
-Diamantes, banco protegido, robos PvP, casino, ruleta, lotería con +200 boletos, transferencias entre usuarios.
-
-### 🎰 DOBLE GACHA
-Gacha 1 con +90 personajes de anime (SSR/SR/R) y Gacha 2 con personajes de anime real. Colecciona, vende, intercambia.
-
-</td><td width="50%">
-
-### 🧠 IA DE HINATA
-Personalidad completa de Hinata Hyuga. Responde por comando, mención o respondiendo a sus mensajes. Diferente con El Vigilante (amorosa) y con extraños (seria). Memoria por usuario.
-
-### 🎮 JUEGOS INTERACTIVOS
-Ahorcado, 3 en raya, trivia (50 preguntas), PPT contra la bot. Todos con botones y premios en diamantes.
-
-### 📥 MULTIDESCARGAS
-YouTube (MP3/MP4), Spotify, TikTok, Instagram, APKs, stickers, MediaFire. Todo desde un solo comando.
-
-</td></tr>
-</table>
+Actualmente cuenta con más de 113 comandos, múltiples sistemas de progresión y una experiencia diseñada para comunidades, grupos y usuarios individuales.
 
 ---
 
-## ✦ TODOS LOS COMANDOS
+✦ CARACTERÍSTICAS PRINCIPALES
 
-<details open>
-<summary><b>⚔️ RPG</b> — 22 comandos</summary>
+⚔️ RPG COMPLETO
 
-`work` `work2` `daily` `weekly` `monthly` `fish` `crime` `cazar` `minar` `cofre` `aventura` `slut` `casino` `ruleta` `loteria` `steal` `pelear` `curar` `levelup` `clase` `perfil` `banco` `dep` `ret` `pay` `top`
+- Sistema de experiencia
+- Niveles automáticos
+- Clases especiales
+- Aventuras
+- Minería
+- Pesca
+- Cacería
+- Peleas
+- Crímenes
+- Banco virtual
+- Sistema de trabajo
 
-</details>
+💎 ECONOMÍA
 
-<details>
-<summary><b>🎰 GACHA</b> — 10 comandos</summary>
+- Diamantes
+- Transferencias
+- Banco protegido
+- Casino
+- Ruleta
+- Lotería
+- Robos PvP
+- Ranking global
 
-`rw` `claim` `rw2` `inventario` `inventario2` `coleccion` `vender` `mercado` `regalar` `suertegacha`
+🎰 GACHA
 
-</details>
+- Personajes SSR
+- Personajes SR
+- Personajes R
+- Inventario
+- Mercado
+- Colecciones
+- Intercambios
 
-<details>
-<summary><b>🎮 JUEGOS</b> — 4 comandos</summary>
+🧠 IA CONVERSACIONAL
 
-`ahorcado` `tictactoe` `trivia` `ppt`
+- Personalidad inspirada en Hinata Hyuga
+- Respuesta por comando
+- Respuesta por mención
+- Memoria por usuario
+- Conversación natural
 
-</details>
+🎮 JUEGOS
 
-<details>
-<summary><b>👥 GRUPOS</b> — 18 comandos</summary>
+- Trivia
+- Ahorcado
+- Tres en Raya
+- Piedra Papel o Tijera
 
-`antilink` `close` `open` `delete` `demote` `promote` `kick` `infogrupo` `resetlink` `setdesc` `setname` `setphoto` `setwelcome` `welcome` `tagall` `admins` `confesar` `link` `top`
+📥 DESCARGAS
 
-</details>
-
-<details>
-<summary><b>📥 DESCARGAS</b> — 8 comandos</summary>
-
-`play` `tiktok` `spotify` `instagram` `apk` `mediafire` `stickerly` `tenor`
-
-</details>
-
-<details>
-<summary><b>🎪 DIVERSIÓN</b> — 6 comandos</summary>
-
-`quien` `reto` `ship` `gay` `pp` `facto`
-
-</details>
-
-<details>
-<summary><b>🌸 ANIME</b> — 15 comandos</summary>
-
-`angry` `solo` `sad` `kiss` `hug` `kick` `happy` `bite` `bonk` `bully` `smile` `smug` `tickle` `cringe` `slap`
-
-</details>
-
-<details>
-<summary><b>🤖 IA</b> — 1 comando</summary>
-
-`ia` `hinata` — También responde por mención o respondiendo a sus mensajes
-
-</details>
-
-<details>
-<summary><b>👑 OWNER</b> — 10 comandos</summary>
-
-`dardiamantes` `darxp` `gachafull` `resetgacha` `join` `update` `getplugin` `bc` `spam` `exec`
-
-</details>
-
-<details>
-<summary><b>ℹ️ INFO</b> — 8 comandos</summary>
-
-`owner` `ping` `botinfo` `totalcmd` `inforpg` `infogacha` `infogroup` `infobot`
-
-</details>
+- YouTube MP3
+- YouTube MP4
+- TikTok
+- Spotify
+- Instagram
+- APKs
+- MediaFire
+- Stickers
 
 ---
 
-## ✦ INSTALACIÓN RÁPIDA
+✦ LISTA DE COMANDOS
 
-```bash
+⚔️ RPG (26)
+
+"work" • "work2" • "daily" • "weekly" • "monthly" • "fish" • "crime" • "cazar" • "minar" • "cofre" • "aventura" • "slut" • "casino" • "ruleta" • "loteria" • "steal" • "pelear" • "curar" • "levelup" • "clase" • "perfil" • "banco" • "dep" • "ret" • "pay" • "top"
+
+---
+
+🎰 GACHA (10)
+
+"rw" • "claim" • "rw2" • "inventario" • "inventario2" • "coleccion" • "vender" • "mercado" • "regalar" • "suertegacha"
+
+---
+
+🎮 JUEGOS (4)
+
+"ahorcado" • "tictactoe" • "trivia" • "ppt"
+
+---
+
+👥 GRUPOS (19)
+
+"antilink" • "close" • "open" • "delete" • "demote" • "promote" • "kick" • "infogrupo" • "resetlink" • "setdesc" • "setname" • "setphoto" • "setwelcome" • "welcome" • "tagall" • "admins" • "confesar" • "link" • "top"
+
+---
+
+📥 DESCARGAS (8)
+
+"play" • "tiktok" • "spotify" • "instagram" • "apk" • "mediafire" • "stickerly" • "tenor"
+
+---
+
+🎪 DIVERSIÓN (6)
+
+"quien" • "reto" • "ship" • "gay" • "pp" • "facto"
+
+---
+
+🌸 ANIME (15)
+
+"angry" • "solo" • "sad" • "kiss" • "hug" • "kick" • "happy" • "bite" • "bonk" • "bully" • "smile" • "smug" • "tickle" • "cringe" • "slap"
+
+---
+
+🤖 IA
+
+"ia" • "hinata"
+
+---
+
+👑 OWNER (10)
+
+"dardiamantes" • "darxp" • "gachafull" • "resetgacha" • "join" • "update" • "getplugin" • "bc" • "spam" • "exec"
+
+---
+
+ℹ️ INFORMACIÓN (8)
+
+"owner" • "ping" • "botinfo" • "totalcmd" • "inforpg" • "infogacha" • "infogroup" • "infobot"
+
+---
+
+✦ INSTALACIÓN
+
 git clone https://github.com/ElvigilanteDv/Hinata-Bot.git
 cd Hinata-Bot
 npm install
 npm start
-```
-
----
 
 ✦ REQUISITOS
 
-· Node.js 18+
-· npm
-· 2GB+ RAM recomendado
-· API Key de Groq (opcional, para IA)
+- Node.js 18 o superior
+- npm actualizado
+- 2 GB de RAM recomendados
+- Conexión a Internet
+- API Key de Groq (opcional)
 
 ---
 
-⚠️ LICENCIA Y DERECHOS DE AUTOR
+✦ ESTRUCTURA DEL BOT
+
+✅ RPG
+
+✅ Economía
+
+✅ Gacha
+
+✅ IA
+
+✅ Juegos
+
+✅ Descargas
+
+✅ Administración de grupos
+
+✅ Herramientas para Owner
+
+✅ Sistema de experiencia
+
+✅ Ranking global
+
+---
+
+⚠️ LICENCIA
 
 HINATA BOT es propiedad intelectual de EL VIGILANTE y BRAYANRK.
 
-· ✅ Permitido: Usar, modificar y compartir el bot sin fines comerciales
-· ✅ Permitido: Crear contenido (videos, tutoriales) usando la bot dando crédito
-· ❌ Prohibido: Vender este bot o cualquier derivado sin autorización
-· ❌ Prohibido: Remover créditos de los creadores
-· ❌ Prohibido: Afirmar que es de tu autoría
+PERMITIDO
 
-El uso comercial, venta o distribución sin autorización expresa de los creadores será considerado violación de derechos de autor.
+✔️ Usar el bot
 
-© 2026 EL VIGILANTE & BRAYANRK — Todos los derechos reservados
+✔️ Modificarlo para uso personal
+
+✔️ Compartirlo manteniendo créditos
+
+✔️ Crear contenido sobre el proyecto
+
+PROHIBIDO
+
+❌ Vender el proyecto
+
+❌ Vender modificaciones sin permiso
+
+❌ Eliminar créditos
+
+❌ Reclamar autoría
+
+❌ Redistribuir con fines comerciales
 
 ---
 
-<div align="center">
+⭐ APOYA EL PROYECTO
 
-⭐ Dale estrella al repositorio | 💬 Únete al grupo oficial
+Si te gusta HINATA BOT:
 
-"No me rendiré, porque quiero ser fuerte como Naruto-kun" — Hinata Hyuga 🌸
+⭐ Dale estrella al repositorio
 
-EL VIGILANTE & BRAYANRK © 2026
+📢 Compártelo con tus amigos
+
+💬 Únete a la comunidad
+
+❤️ Apoya a los desarrolladores
+
+---
+
+<div align="center">𓆩⚝𓆪 HINATA BOT 𓍯 𓆩⚝𓆪
+
+"No me rendiré, porque quiero ser fuerte como Naruto-kun."
+
+— Hinata Hyuga 🌸
+
+EL VIGILANTE 🇭🇳 & BRAYANRK 🇨🇴
+
+© 2026 Todos los derechos reservados
 
 </div>
-```
