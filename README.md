@@ -3,7 +3,7 @@
 
 La kunoichi del Clan Hyuga ahora en tu WhatsApp
 
-"Version" (https://img.shields.io/badge/Version-2.2.0-blue?style=for-the-badge)
+["Version" (https://img.shields.io/badge/Version-2.2.0-blue?style=for-the-badge]
 "Commands" (https://img.shields.io/badge/Commands-113+-purple?style=for-the-badge)
 "Node.js" (https://img.shields.io/badge/Node.js-21+-green?style=for-the-badge)
 "WhatsApp" (https://img.shields.io/badge/WhatsApp-Bot-25D366?style=for-the-badge&logo=whatsapp&logoColor=white)
