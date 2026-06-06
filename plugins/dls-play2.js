@@ -1,4 +1,3 @@
-// Créditos Wilker Ofc
 import yts from 'yt-search'
 import fetch from 'node-fetch'
 
