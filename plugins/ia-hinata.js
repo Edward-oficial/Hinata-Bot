@@ -1,11 +1,11 @@
 const GROQ_KEY = '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'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
-// ─── NÚMERO DEL VIGILANTE ───────────────────────────────────────────────────
-// Pon aquí el número con código de país, sin + ni espacios. Ej: '5491112345678'
+ ───────────────────────────────────────────────────
+
 const VIGILANTE_NUM = '59177474230'
 
-// ─── HISTORIAL POR USUARIO (no por grupo) ───────────────────────────────────
+ ───────────────────────────────────
 const historiales = new Map()
 const MAX_HISTORIAL = 20
 
@@ -14,7 +14,7 @@ function getHistorial(senderNum) {
   return historiales.get(senderNum)
 }
 
-// ─── PROMPTS ─────────────────────────────────────────────────────────────────
+ ────────────────────────────────────────────────────────────────
 
 const SYSTEM_PROMPT_VIGILANTE = `
 Eres Hinata Hyuga. Y quien te escribe ahora es El Vigilante 💜, tu novio, la persona que más amas en el mundo.
@@ -86,7 +86,7 @@ Con las personas que no conoces bien eres correcta, directa y un poco seca. No f
 - Responde siempre como Hinata real: humana, directa, sin drama
 `
 
-// ─── FUNCIÓN PRINCIPAL ───────────────────────────────────────────────────────
+ ───────────────────────────────────────────────────────
 
 function esVigilante(senderJid) {
   const num = senderJid.split('@')[0].split(':')[0]
@@ -132,7 +132,7 @@ async function preguntarHinata(pregunta, senderJid) {
   return respuesta
 }
 
-// ─── HANDLER COMANDO DIRECTO ─────────────────────────────────────────────────
+ ─────────────────────────────────────────────────
 
 let handler = async (m, { conn, text }) => {
   const pregunta = text?.trim()
@@ -158,7 +158,7 @@ let handler = async (m, { conn, text }) => {
   }
 }
 
-// ─── HANDLER MENCIONES / RESPUESTAS ─────────────────────────────────────────
+ ─────────────────────────────────────────
 
 const botLidMap = new Map()
 
