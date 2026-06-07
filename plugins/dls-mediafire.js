@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import * as cheerio from 'cheerio'
 import { tmpdir } from 'os'
 import { join } from 'path'
-import { createWriteStream, unlinkSync, createReadStream } from 'fs'
+import { createWriteStream, unlinkSync, readFileSync, statSync } from 'fs'
 import { pipeline } from 'stream/promises'
 
 const getMimeFromFilename = (filename) => {
@@ -58,11 +58,9 @@ const scrapeMediafire = async (pageUrl) => {
 
   directLink = directLink.replace(/&amp;/g, '&').trim()
 
-  // Nombre real desde el link directo (más confiable que el HTML)
   const rawName = directLink.split('/').pop().split('?')[0]
   const filename = decodeURIComponent(rawName.replace(/\+/g, ' ')).trim() || 'archivo'
 
-  // Tamaño desde el li correcto
   let sizeText = '?'
   $('ul.details li').each((_, el) => {
     const txt = $(el).text()
@@ -95,9 +93,7 @@ let handler = async (m, { conn, text }) => {
     const ext = filename.split('.').pop() || '?'
     const mimetype = getMimeFromFilename(filename)
 
-    // Nombre de archivo temporal sin espacios para evitar ENOENT
-    const safeName = `mf_${Date.now()}.tmp`
-    tmpPath = join(tmpdir(), safeName)
+    tmpPath = join(tmpdir(), `mf_${Date.now()}.tmp`)
 
     let texto = '📥 「 HINATA MEDIAFIRE 」 📥\n\n'
     texto += '📁 » *' + filename + '*\n'
@@ -118,17 +114,24 @@ let handler = async (m, { conn, text }) => {
     const ct = fileRes.headers.get('content-type')
     if (ct?.includes('text/html')) throw new Error('Mediafire bloqueó la descarga')
 
-    // Stream directo a disco
+    // Stream a disco
     const writer = createWriteStream(tmpPath)
     await pipeline(fileRes.body, writer)
+
+    // Verificar que el archivo existe y tiene tamaño
+    const stat = statSync(tmpPath)
+    console.log(`[MF] Guardado en disco: ${stat.size} bytes`)
+    if (stat.size < 1024) throw new Error('Archivo descargado muy pequeño')
 
     await conn.sendMessage(m.chat, {
       text: '📥 「 HINATA MEDIAFIRE 」 📥\n\n💫 » Enviando a WhatsApp...'
     }, { quoted: m })
 
-    // Enviar como stream desde disco (sin cargar en RAM)
+    // Leer del disco y enviar como buffer
+    const fileBuffer = readFileSync(tmpPath)
+
     await conn.sendMessage(m.chat, {
-      document: createReadStream(tmpPath),
+      document: fileBuffer,
       fileName: filename,
       mimetype: mimetype
     }, { quoted: m })
@@ -136,7 +139,7 @@ let handler = async (m, { conn, text }) => {
     await m.react('✅')
 
   } catch (e) {
-    console.log(e)
+    console.log('[MF ERROR]', e)
     await m.react('❌')
     conn.sendMessage(m.chat, {
       text: '📥 「 HINATA MEDIAFIRE 」 📥\n\n💫 » Error al descargar\n\n> ' + e.message
