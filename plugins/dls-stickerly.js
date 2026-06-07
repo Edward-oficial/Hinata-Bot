@@ -1,8 +1,37 @@
+// © 2026 EL VIGILANTE & BRAYANRK - HINATA BOT
+// No quitar créditos
+
 import fetch from 'node-fetch'
+import { exec } from 'child_process'
+import { writeFile, unlink, readFile } from 'fs/promises'
+import { tmpdir } from 'os'
+import { join } from 'path'
 import {
   generateWAMessageFromContent,
   proto
 } from '@whiskeysockets/baileys'
+
+async function toWhatsAppSticker(url) {
+  const res = await fetch(url)
+  const buffer = Buffer.from(await res.arrayBuffer())
+
+  const input = join(tmpdir(), `stk_in_${Date.now()}.webp`)
+  const output = join(tmpdir(), `stk_out_${Date.now()}.webp`)
+
+  await writeFile(input, buffer)
+
+  await new Promise((resolve, reject) => {
+    exec(
+      `ffmpeg -y -i "${input}" -vcodec libwebp -loop 0 -preset default -an -vsync 0 -s 512:512 "${output}"`,
+      (err) => { if (err) reject(err); else resolve() }
+    )
+  })
+
+  const result = await readFile(output)
+  await unlink(input).catch(() => {})
+  await unlink(output).catch(() => {})
+  return result
+}
 
 let handler = async (m, { conn, text }) => {
   if (!text) {
@@ -17,16 +46,13 @@ let handler = async (m, { conn, text }) => {
     }]
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
-      header: { title: '🌟 HINATA STICKERLY 🌟', subtitle: 'Busca y descarga stickers', hasMediaAttachment: false },
-      body: { text: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » Busca stickers en Stickerly\n\n> #stickerly <búsqueda>\n> #stickerly Goku' },
+      header: { title: '𑁍ࠬܓ HINATA STICKERLY 𑁍ࠬܓ', subtitle: 'Busca y descarga stickers', hasMediaAttachment: false },
+      body: { text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❀ Busca stickers en Stickerly\n\n> .stickerly <búsqueda>\n> .stickerly Goku' },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: {
         buttons: [{
           name: 'single_select',
-          buttonParamsJson: JSON.stringify({
-            title: '🔍 BÚSQUEDAS',
-            sections: sections
-          })
+          buttonParamsJson: JSON.stringify({ title: '🔍 BÚSQUEDAS', sections })
         }]
       }
     })
@@ -42,19 +68,18 @@ let handler = async (m, { conn, text }) => {
   await m.react('🔍')
 
   try {
-    let searchUrl = `https://api.delirius.store/search/stickerly?query=${encodeURIComponent(text)}`
-    let res = await fetch(searchUrl)
-    let json = await res.json()
+    const res = await fetch(`https://api.delirius.store/search/stickerly?query=${encodeURIComponent(text)}`)
+    const json = await res.json()
 
     if (!json.status || !json.data?.length) {
       await m.react('❌')
       return conn.sendMessage(m.chat, {
-        text: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » Sin resultados'
+        text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❌ Sin resultados\n\n> Intenta con otro término'
       }, { quoted: m })
     }
 
-    let resultados = json.data.slice(0, 10)
-    let rows = resultados.map((pack, i) => ({
+    const resultados = json.data.slice(0, 10)
+    const rows = resultados.map((pack, i) => ({
       header: pack.isAnimated ? '🎬 Animado' : '🖼️ Estático',
       title: pack.name.substring(0, 35),
       description: '👤 ' + pack.author + ' | 📦 ' + pack.sticker_count + ' stickers',
@@ -62,8 +87,8 @@ let handler = async (m, { conn, text }) => {
     }))
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
-      header: { title: '🌟 HINATA STICKERLY 🌟', subtitle: 'Selecciona un paquete', hasMediaAttachment: false },
-      body: { text: '🌟 「 HINATA STICKERLY 」 🌟\n\n💫 » Búsqueda: ' + text + '\n📦 » ' + json.data.length + ' paquetes\n\n> Elige un paquete' },
+      header: { title: '𑁍ࠬܓ HINATA STICKERLY 𑁍ࠬܓ', subtitle: 'Selecciona un paquete', hasMediaAttachment: false },
+      body: { text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❀ Búsqueda: ' + text + '\n❀ ' + json.data.length + ' paquetes encontrados\n\n> Elige un paquete' },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: {
         buttons: [{
@@ -83,9 +108,11 @@ let handler = async (m, { conn, text }) => {
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 
   } catch (e) {
-    console.log(e)
+    console.error(e)
     await m.react('❌')
-    conn.sendMessage(m.chat, { text: '❌ Error al buscar' }, { quoted: m })
+    conn.sendMessage(m.chat, {
+      text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❌ Error al buscar\n\n> ' + e.message
+    }, { quoted: m })
   }
 }
 
@@ -96,53 +123,62 @@ handler.before = async (m, { conn }) => {
   try {
     const data = JSON.parse(nativeFlow.paramsJson || '{}')
     const id = data.id || data.selectedId || data.selectedRowId || null
-    if (!id || !id.startsWith('stickerlydl_')) return false
+    if (!id) return false
 
-    let parts = id.split('_')
-    let urlBase64 = parts[2]
-    let nameBase64 = parts[3]
-    let packUrl = Buffer.from(urlBase64, 'base64').toString()
-    let packName = Buffer.from(nameBase64, 'base64').toString()
+    if (id.startsWith('stickerly_')) {
+      const query = id.replace('stickerly_', '')
+      await conn.sendMessage(m.chat, {
+        text: `𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❀ Escribe el comando así:\n> .stickerly ${query}`
+      }, { quoted: m })
+      return true
+    }
+
+    if (!id.startsWith('stickerlydl_')) return false
+
+    const parts = id.split('_')
+    const packUrl = Buffer.from(parts[2], 'base64').toString()
+    const packName = Buffer.from(parts[3], 'base64').toString()
 
     await m.react('⏳')
-    await conn.sendMessage(m.chat, { text: '⏳ Descargando stickers...' }, { quoted: m })
+    await conn.sendMessage(m.chat, {
+      text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❀ Descargando stickers...\n\n> Espera un momento'
+    }, { quoted: m })
 
-    let downloadUrl = `https://api.delirius.store/download/stickerly?url=${encodeURIComponent(packUrl)}`
-    let res = await fetch(downloadUrl)
-    let json = await res.json()
+    const res = await fetch(`https://api.delirius.store/download/stickerly?url=${encodeURIComponent(packUrl)}`)
+    const json = await res.json()
 
     if (!json.status || !json.data?.stickers?.length) {
       await m.react('❌')
-      return conn.sendMessage(m.chat, { text: '❌ Error al descargar stickers' }, { quoted: m })
+      return conn.sendMessage(m.chat, {
+        text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❌ Error al descargar stickers'
+      }, { quoted: m })
     }
 
-    let stickers = json.data.stickers
+    const stickers = json.data.stickers
     let enviados = 0
 
     for (let i = 0; i < Math.min(stickers.length, 5); i++) {
       try {
-        let stickerRes = await fetch(stickers[i])
-        let stickerBuffer = await stickerRes.buffer()
-        await conn.sendMessage(m.chat, {
-          sticker: stickerBuffer
-        }, { quoted: m })
+        const stickerBuffer = await toWhatsAppSticker(stickers[i])
+        await conn.sendMessage(m.chat, { sticker: stickerBuffer }, { quoted: m })
         enviados++
-      } catch (e) {
-        console.log('Error enviando sticker ' + i)
-      }
+      } catch {}
     }
 
     await conn.sendMessage(m.chat, {
-      text: '🌟 「 HINATA STICKERLY 」 🌟\n\n✅ » ' + enviados + '/' + stickers.length + ' stickers enviados\n📦 » ' + packName + '\n👤 » ' + json.data.author + '\n\n> Algunos stickers pueden ser animados'
+      text: `𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n✅ ${enviados}/${stickers.length} stickers enviados\n❀ Pack: *${packName}*\n❀ Autor: *${json.data.author || 'Desconocido'}*`
     }, { quoted: m })
 
     await m.react('✅')
     return true
 
   } catch (e) {
-    console.log(e)
+    console.error(e)
     await m.react('❌')
-    return conn.sendMessage(m.chat, { text: '❌ Error: ' + e.message }, { quoted: m })
+    conn.sendMessage(m.chat, {
+      text: '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n❌ Error\n\n> ' + e.message
+    }, { quoted: m })
+    return true
   }
 }
 
