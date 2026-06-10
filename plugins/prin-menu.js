@@ -1,145 +1,117 @@
-import fs from 'fs'
-import path, { join } from 'path'
-import fetch from 'node-fetch'
 import { xpRange } from '../lib/levelling.js'
+import fs from 'fs'
+import path from 'path'
+import fetch from 'node-fetch'
 
-const tags = {
-  main: '⭐ ρяιη¢ιραℓ',
-  group: '👥 ɢяυρσѕ',
-  rpg: '⚔️ яρg',
-  game: '🎮 gαмє',
-  gacha: '🎰 gα¢нα',
-  diversion: '🎪 ∂ινєяѕιση',
-  anime: '🌸 αηιмє',
-  serbot: '🤖 ѕєявσт',
-  owner: '👑 σωηєя',
-  downloader: '📥 ∂σωηℓσα∂єя',
-  info: 'ℹ️ ιηƒσ'
-}
-
-const bannerCategory = {
-  main: 'https://files.catbox.moe/r60c8l.jpg',
-  group: 'https://files.catbox.moe/3tlaq0.png',
-  rpg: 'https://files.catbox.moe/e858ul.png',
-  game: 'https://i.ibb.co/r2wQ4gBD/play.png',
-  gacha: 'https://files.catbox.moe/rlnc3s.png',
-  serbot: 'https://files.catbox.moe/r60c8l.jpg',
-  owner: 'https://files.catbox.moe/52nm0t.png',
-  downloader: 'https://files.catbox.moe/ow6st7.png',
-  info: 'https://files.catbox.moe/42tsa2.png',
-  diversion: 'https://files.catbox.moe/2t7d69.png',
-  anime: 'https://files.catbox.moe/2t7d69.png'
-}
+const charset = { a:'ᴀ',b:'ʙ',c:'ᴄ',d:'ᴅ',e:'ᴇ',f:'ꜰ',g:'ɢ',h:'ʜ',i:'ɪ',j:'ᴊ',k:'ᴋ',l:'ʟ',m:'ᴍ',n:'ɴ',o:'ᴏ',p:'ᴘ',q:'ǫ',r:'ʀ',s:'ꜱ',t:'ᴛ',u:'ᴜ',v:'ᴠ',w:'ᴡ',x:'x',y:'ʏ',z:'ᴢ' }
+const textCyberpunk = t => t.replace(/[a-z]/gi, c => charset[c.toLowerCase()] || c)
 
 const defaultMenu = {
   before: `
-࿇ ══━━━✥◈✥━━━══ ࿇
-    𝕳𝖎𝖓𝖆𝖙𝖆 𝕭𝖔𝖙
-࿇ ══━━━✥◈✥━━━══ ࿇
- ✦%totalreg ᴜꜱᴇʀꜱ ✦ %totalcmd ᴄᴍᴅꜱ ✦
+—͟͟͞͞ ♱ *HINATA BOT* »
+> 🪐 𝙉𝙤𝙢𝙗𝙧𝙚 » %name
+> ⚡ 𝙀𝙭𝙥 » %exp / %maxexp
+> 🌐 𝙈𝙤𝙙𝙤 » %mode
+> ⏳ 𝘼𝙘𝙩𝙞𝙫𝙤 » %muptime
+> 👥 𝙐𝙨𝙪𝙖𝙧𝙞𝙤𝙨 » %totalreg
 
-> ⏱️ %uptime activa
-> 👤 Solicitado por @%user
+> Repositorio oficial del bot 
+https://github.com/thecarlos19/black-clover-MD
 
 %readmore
-`,
-  header: '\n𖣔 %category ˚ʚ♡ɞ˚ (%count cmd)\n',
-  body: '❧ %cmd',
-  desc: '\n> ↆ %desc',
-  footer: '',
-  after: `
-
-࿇ ══━━━✥◈✥━━━══ ࿇
-ᵉˡ ᵛⁱᵍⁱˡᵃⁿᵗᵉ ✦ ᵇʳᵃʸᵃⁿʳᵏ
-࿇ ══━━━✥◈✥━━━══ ࿇`
+`.trim(),
+  header: '\n⧼⋆꙳•〔 ♱ %category 〕⋆꙳•⧽',
+  body: '> 𖣘 %cmd',
+  footer: '╰⋆꙳•❅‧*₊⋆꙳︎‧*❆₊⋆╯',
+  after: '\n⌬ 𝗛𝗜𝗡𝗔𝗧𝗔 𝗠𝗘𝗡𝗨 🧬 - Sistema ejecutado con éxito.'
 }
 
-let handler = async (m, { conn, usedPrefix: _p, command }) => {
+const menuDir = './media/menu'
+fs.mkdirSync(menuDir, { recursive: true })
+
+const getMenuMediaFile = jid =>
+  path.join(menuDir, `menuMedia_${jid.replace(/[:@.]/g, '_')}.json`)
+
+const loadMenuMedia = jid => {
   try {
-    let who = m.sender
-    let user = global.db.data.users[who]
-    if (!user) {
-      user = { exp: 0, level: 0 }
-      global.db.data.users[who] = user
-    }
-
-    const help = Object.values(global.plugins)
-      .filter(p => !p.disabled)
-      .map(p => ({
-        help: Array.isArray(p.help) ? p.help : [p.help],
-        tags: Array.isArray(p.tags) ? p.tags : [p.tags],
-        prefix: 'customPrefix' in p,
-        desc: p.desc || ''
-      }))
-
-    let tagSeleccionada = null
-    if (command.startsWith('menu') && command.length > 4) {
-      let tagBuscada = command.replace('menu', '').toLowerCase()
-      for (let key of Object.keys(tags)) {
-        if (key.toLowerCase() === tagBuscada) {
-          tagSeleccionada = key
-          break
-        }
-      }
-    }
-
-    let bannerFinal = tagSeleccionada ? bannerCategory[tagSeleccionada] : 'https://files.catbox.moe/c14iz0.png'
-
-    let textoMenu = defaultMenu.before
-      .replace(/%totalreg/g, Object.keys(global.db.data.users).length)
-      .replace(/%totalcmd/g, Object.keys(global.plugins).length)
-      .replace(/%uptime/g, Math.floor(process.uptime() / 60) + 'm ' + Math.floor(process.uptime() % 60) + 's')
-      .replace(/%user/g, who.split('@')[0])
-
-    if (tagSeleccionada) {
-      textoMenu = textoMenu.replace('𝕳𝖎𝖓𝖆𝖙𝖆 𝕭𝖔𝖙', '𝕳𝖎𝖓𝖆𝖙𝖆 𝕭𝖔𝖙 ✦ ' + tags[tagSeleccionada].replace(/[⭐👥⚔️🎮🎰🤖👑📥ℹ️]/g, '').trim())
-    }
-
-    for (let tag of Object.keys(tags)) {
-      if (tagSeleccionada && tag !== tagSeleccionada) continue
-
-      const cmdsFiltrados = help.filter(menu => menu.tags?.includes(tag))
-      
-      const cmds = cmdsFiltrados
-        .map(menu => menu.help.map(h => 
-          defaultMenu.body.replace(/%cmd/g, menu.prefix ? h : `${_p}${h}`) + 
-          (menu.desc ? defaultMenu.desc.replace(/%desc/g, menu.desc) : '')
-        ).join('\n')).join('\n')
-
-      if (cmds) {
-        let count = cmdsFiltrados.length
-        textoMenu += defaultMenu.header.replace(/%category/g, tags[tag]).replace(/%count/g, count)
-        textoMenu += cmds + '\n'
-      }
-    }
-
-    textoMenu += defaultMenu.after
-
-    const replace = { readmore: readMore }
-    let texto = textoMenu
-    for (let key of Object.keys(replace)) {
-      texto = texto.replace(new RegExp(`%${key}`, 'g'), replace[key])
-    }
-
-    await conn.sendMessage(m.chat, {
-      image: { url: bannerFinal },
-      caption: texto.trim(),
-      mentions: [who]
-    }, { quoted: m })
-
-  } catch (e) {
-    console.log(e)
-    await conn.sendMessage(m.chat, { text: `❌ Error:\n${e}` }, { quoted: m })
-  }
+    return JSON.parse(fs.readFileSync(getMenuMediaFile(jid)))
+  } catch { return {} }
 }
 
-handler.help = ['menu']
+const fetchBuffer = url => fetch(url).then(r => r.arrayBuffer()).then(b => Buffer.from(b))
+
+const defaultThumb = await fetchBuffer('https://files.catbox.moe/c14iz0.png')
+
+let handler = async (m, { conn, usedPrefix }) => {
+  await conn.sendMessage(m.chat, { react: { text: '⚔️', key: m.key } })
+
+  const botJid = conn.user.jid
+  const menuMedia = loadMenuMedia(botJid)
+  const menu = global.subBotMenus?.[botJid] || defaultMenu
+
+  const user = global.db.data.users[m.sender] || { level: 0, exp: 0 }
+  const { min, xp } = xpRange(user.level, global.multiplier)
+
+  const replace = {
+    name: await conn.getName(m.sender),
+    level: user.level,
+    exp: user.exp - min,
+    maxexp: xp,
+    totalreg: Object.keys(global.db.data.users).length,
+    mode: global.opts.self ? 'Privado' : 'Público',
+    muptime: clockString(process.uptime() * 1000),
+    readmore: String.fromCharCode(8206).repeat(4001)
+  }
+
+  const plugins = Object.values(global.plugins || {}).filter(p => !p.disabled)
+
+  const help = plugins.map(p => ({
+    help: [].concat(p.help || []),
+    tags: [].concat(p.tags || []),
+    prefix: 'customPrefix' in p,
+    desc: p.desc || ''
+  }))
+
+  const tags = {}
+  help.forEach(({ tags: tg }) =>
+    tg.forEach(t => t && !tags[t] && (tags[t] = textCyberpunk(t)))
+  )
+
+  const text = [
+    menu.before,
+    ...Object.keys(tags).map(tag => {
+      const cmds = help
+        .filter(p => p.tags.includes(tag))
+        .flatMap(p => p.help.map(c =>
+          menu.body.replace('%cmd', p.prefix ? c : usedPrefix + c) + 
+          (p.desc ? `\n> ✦ ${p.desc}` : '')
+        )).join('\n')
+      return cmds ? `${menu.header.replace('%category', tags[tag])}\n${cmds}\n${menu.footer}` : ''
+    }).filter(Boolean),
+    menu.after
+  ].join('\n').replace(/%(\w+)/g, (_, k) => replace[k] ?? '')
+
+  const thumb = menuMedia.thumbnail && fs.existsSync(menuMedia.thumbnail)
+    ? fs.readFileSync(menuMedia.thumbnail)
+    : defaultThumb
+
+  await conn.sendMessage(m.chat, {
+    image: thumb,
+    caption: text,
+    footer: '🧠 HINATA SYSTEM ☘️',
+    headerType: 4
+  })
+}
+
+handler.help = ['menu', 'menú']
 handler.tags = ['main']
-handler.command = /^(menu|menú|help)(rpg|group|diversion|game|gacha|serbot|owner|downloader|info|main)?$/i
+handler.command = ['menu', 'menú', 'help', 'ayuda']
+handler.desc = 'muestra el menu'
 handler.register = false
-handler.desc = 'Muestra el menú'
 
 export default handler
 
-const more = String.fromCharCode(8206)
-const readMore = more.repeat(4001)
+const clockString = ms =>
+  [3600000, 60000, 1000].map((v, i) =>
+    String(Math.floor(ms / v) % (i ? 60 : 99)).padStart(2, '0')
+  ).join(':')
