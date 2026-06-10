@@ -1,4 +1,4 @@
-const GROQ_KEY = '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'
+const GROQ_KEY = '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'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 
  ───────────────────────────────────────────────────
@@ -8,7 +8,7 @@ const BRAYANRK_NUM = '573223090406'
 
  ───────────────────────────────────
 const historiales = new Map()
-const MAX_HISTORIAL = 20
+const MAX_HISTORIAL = 50
 
 function getHistorial(senderNum) {
   if (!historiales.has(senderNum)) historiales.set(senderNum, [])
