@@ -269,7 +269,7 @@ handler.before = async (m, { conn }) => {
     await conn.sendMessage(m.chat, {
       video: { url: 'https://files.catbox.moe/og381s.mp4' },
       gifPlayback: true,
-      caption: `𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n⚡ *RETO*\n\n❀ ${reto}\n`
+      caption: `𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n🎧 *RETO*\n\n❀ ${reto}\n`
     }, { quoted: m })
     return true
   }
