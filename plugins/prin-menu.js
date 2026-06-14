@@ -88,7 +88,7 @@ let handler = async (m, { conn, usedPrefix }) => {
         .filter(p => p.tags.includes(tag))
         .flatMap(p => p.help.map(c =>
           menu.body.replace('%cmd', p.prefix ? c : usedPrefix + c) +
-          (p.desc ? `\n   ↳ ${p.desc}` : '')
+          (p.desc ? `\n> ${p.desc}` : '')
         )).join('\n')
       return cmds ? `${menu.header.replace('%category', tags[tag])}\n${cmds}\n${menu.footer}` : ''
     }).filter(Boolean),
