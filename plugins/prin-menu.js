@@ -13,21 +13,29 @@ const defaultMenu = {
 ࿇ ══━━━✥◈✥━━━══ ࿇
 
 𖣔 ɪɴꜰᴏ ˚ʚ♡ɞ˚
-❧ 𝙄𝙃 » %name
-❧ 𝙀𝙣 » %exp / %maxexp
-❧ 𝙄𝙣 » %mode
-❧ 𝙎 » %muptime
-❧ 𝙏 » %totalreg
+❧ Usuario
+> %name
+❧ Experiencia
+> %exp / %maxexp
+❧ Modo
+> %mode
+❧ Activo
+> %muptime
+❧ Registrados
+> %totalreg
 
-❧ 𝙀𝙧𝙮 » https://elvigilante-api.onrender.com/dash
-❧ 𝙀𝙦 » https://github.com/ElvigilanteDv/Hinata-bot
+𖣔 ᴇɴʟᴀᴄᴇs ˚ʚ♡ɞ˚
+❧ API
+> https://elvigilante-api.onrender.com/dash
+❧ GitHub
+> https://github.com/ElvigilanteDv/Hinata-bot
 
 %readmore
 `.trim(),
   header: '\n𖣔 %category ˚ʚ♡ɞ˚',
   body: '❧ %cmd',
   footer: '⸻⸻⸻⸻⸻⸻',
-  after: '\n࿇ ══━━━✥◈✥━━━══ ࿇\nᶜʳᵉᵃᵃᵃ ᵖᵒʳ ᴱˡ ᵛⁱᵍⁱˡᵃⁿᵗᵉ ✦ ᴮʳᵃʸᵃⁿᴿᴷ\n࿇ ══━━━✥◈✥━━━══ ࿇'
+  after: '\n࿇ ══━━━✥◈✥━━━══ ࿇\n   𝕳𝖎𝖓𝖆𝖙𝖆 𝕭𝖔𝖙\n࿇ ══━━━✥◈✥━━━══ ࿇\n\n𖣔 ᴄʀᴇᴀᴅᴏʀᴇs ˚ʚ♡ɞ˚\n❧ El Vigilante\n❧ BrayanRK'
 }
 
 const menuDir = './media/menu'
