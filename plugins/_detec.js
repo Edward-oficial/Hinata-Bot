@@ -20,9 +20,10 @@ handler.all = async function (m) {
   if (m.fromMe) return
   if (!m.text) return
 
-  let texto = m.text.trim().toLowerCase()
+  let textoOriginal = m.text.trim().toLowerCase()
+  let textoCapitalizado = textoOriginal.charAt(0).toUpperCase() + textoOriginal.slice(1)
 
-  let audioUrl = audios[texto]
+  let audioUrl = audios[textoCapitalizado]
   if (!audioUrl) return
 
   let conn = this
