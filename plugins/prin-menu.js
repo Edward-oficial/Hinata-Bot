@@ -25,8 +25,8 @@ const defaultMenu = {
 > %totalreg
 
 𖣔 ᴇɴʟᴀᴄᴇs ˚ʚ♡ɞ˚
-❧ API
-> https://elvigilante-api.onrender.com/dash
+❧ Canal
+> https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
 ❧ GitHub
 > https://github.com/ElvigilanteDv/Hinata-bot
 
