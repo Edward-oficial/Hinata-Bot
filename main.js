@@ -25,7 +25,7 @@ process.env.TMPDIR = path.join(process.cwd(), 'tmp');
 
 if (!fs.existsSync(process.env.TMPDIR)) {
   fs.mkdirSync(process.env.TMPDIR, { recursive: true });
-  console.log(chalk.green('✅ Directorio temporal creado'));
+  console.log(chalk.green('Directorio temporal creado'));
 }
 
 import './config.js';
@@ -73,11 +73,11 @@ global.timestamp = { start: new Date() };
 
 const __dirname = global.__dirname(import.meta.url);
 
-console.log(chalk.bold.cyan('\n' + '═'.repeat(60)));
-console.log(chalk.bold.yellow('   𑁍 HINATA BOT - BYAKUGAN ACTIVADO 𑁍'));
-console.log(chalk.bold.cyan('═'.repeat(60)));
-console.log(chalk.magenta('   「No me rendiré, porque quiero ser fuerte como Naruto-kun」'));
-console.log(chalk.bold.cyan('═'.repeat(60) + '\n'));
+console.log(chalk.bold.cyan('\n' + '='.repeat(60)));
+console.log(chalk.bold.yellow('   HINATA BOT - BYAKUGAN ACTIVADO'));
+console.log(chalk.bold.cyan('='.repeat(60)));
+console.log(chalk.magenta('   No me rendire, porque quiero ser fuerte como Naruto-kun'));
+console.log(chalk.bold.cyan('='.repeat(60) + '\n'));
 
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse());
 global.prefix = new RegExp(
@@ -172,19 +172,19 @@ let handler;
 try {
   const handlerModule = await import('./handler.js');
   handler = handlerModule.handler;
-  console.log(chalk.green('✅ Handler cargado correctamente'));
+  console.log(chalk.green('Handler cargado correctamente'));
 } catch (e) {
   console.error(chalk.red('[ERROR] No se pudo cargar el handler principal:'), e);
   process.exit(1);
 }
 
 async function reconnectSubBot(botPath) {
-  console.log(chalk.yellow(`𑁍 [HINATA BOT] Despertando sub-bot: ${path.basename(botPath)}`));
+  console.log(chalk.yellow(`Despertando sub-bot: ${path.basename(botPath)}`));
   try {
     const { state: subBotState, saveCreds: saveSubBotCreds } = await useMultiFileAuthState(botPath);
 
     if (!subBotState.creds.registered) {
-      console.warn(chalk.yellow(`⚠️ [HINATA BOT] Sub-bot en ${path.basename(botPath)} no está registrado`));
+      console.warn(chalk.yellow(`Sub-bot en ${path.basename(botPath)} no esta registrado`));
       return;
     }
 
@@ -213,24 +213,24 @@ async function reconnectSubBot(botPath) {
     subBotConn.ev.on('connection.update', (update) => {
       const { connection, lastDisconnect } = update;
       if (connection === 'open') {
-        console.log(chalk.green(`✨ [HINATA BOT] Sub-bot despertado: ${path.basename(botPath)}`));
+        console.log(chalk.green(`Sub-bot despertado: ${path.basename(botPath)}`));
         const yaExiste = global.conns.some(c => c.user?.jid === subBotConn.user?.jid);
         if (!yaExiste) {
           global.conns.push(subBotConn);
-          console.log(chalk.green(`𑁍 [HINATA BOT] Sub-bot fusionado: ${subBotConn.user?.jid}`));
+          console.log(chalk.green(`Sub-bot fusionado: ${subBotConn.user?.jid}`));
         }
       } else if (connection === 'close') {
         const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
-        console.error(chalk.red(`💥 [HINATA BOT] Sub-bot caído en ${path.basename(botPath)}. Razón: ${reason}`));
+        console.error(chalk.red(`Sub-bot caido en ${path.basename(botPath)}. Razon: ${reason}`));
 
         if (reason === DisconnectReason.loggedOut || reason === 401) {
-          console.log(chalk.red(`❌ [HINATA BOT] Desconexión permanente. Eliminando ${path.basename(botPath)}.`));
+          console.log(chalk.red(`Desconexion permanente. Eliminando ${path.basename(botPath)}.`));
           global.conns = global.conns.filter(conn => conn.user?.jid !== subBotConn.user?.jid);
           try {
             rmSync(botPath, { recursive: true, force: true });
-            console.log(chalk.green(`✅ [HINATA BOT] Sub-bot eliminado: ${botPath}`));
+            console.log(chalk.green(`Sub-bot eliminado: ${botPath}`));
           } catch (e) {
-            console.error(chalk.red(`❌ [ERROR] No se pudo eliminar ${botPath}: ${e}`));
+            console.error(chalk.red(`No se pudo eliminar ${botPath}: ${e}`));
           }
         }
       }
@@ -239,7 +239,7 @@ async function reconnectSubBot(botPath) {
     subBotConn.ev.on('creds.update', saveSubBotCreds);
     subBotConn.handler = handler.bind(subBotConn);
     subBotConn.ev.on('messages.upsert', subBotConn.handler);
-    console.log(chalk.blue(`𑁍 [HINATA BOT] Manejador asignado a: ${path.basename(botPath)}`));
+    console.log(chalk.blue(`Manejador asignado a: ${path.basename(botPath)}`));
 
     if (!global.subBots) {
       global.subBots = {};
@@ -247,7 +247,7 @@ async function reconnectSubBot(botPath) {
     global.subBots[path.basename(botPath)] = subBotConn;
 
   } catch (e) {
-    console.error(chalk.red(`💥 [ERROR] Error al despertar sub-bot en ${path.basename(botPath)}:`), e);
+    console.error(chalk.red(`Error al despertar sub-bot en ${path.basename(botPath)}:`), e);
   }
 }
 
@@ -256,31 +256,31 @@ async function startSubBots() {
 
   if (!existsSync(rutaJadiBot)) {
     mkdirSync(rutaJadiBot, { recursive: true });
-    console.log(chalk.bold.cyan(`📁 [HINATA BOT] Carpeta de sub-bots creada: ${rutaJadiBot}`));
+    console.log(chalk.bold.cyan(`Carpeta de sub-bots creada: ${rutaJadiBot}`));
   } else {
-    console.log(chalk.bold.cyan(`📁 [HINATA BOT] Carpeta de sub-bots detectada: ${rutaJadiBot}`));
+    console.log(chalk.bold.cyan(`Carpeta de sub-bots detectada: ${rutaJadiBot}`));
   }
 
   const readRutaJadiBot = readdirSync(rutaJadiBot);
   if (readRutaJadiBot.length > 0) {
     const credsFile = 'creds.json';
-    console.log(chalk.magenta(`𑁍 [HINATA BOT] Buscando sub-bots... Total: ${readRutaJadiBot.length}`));
+    console.log(chalk.magenta(`Buscando sub-bots... Total: ${readRutaJadiBot.length}`));
 
     for (const subBotDir of readRutaJadiBot) {
       const botPath = join(rutaJadiBot, subBotDir);
       if (statSync(botPath).isDirectory()) {
         const readBotPath = readdirSync(botPath);
         if (readBotPath.includes(credsFile)) {
-          console.log(chalk.magenta(`𑁍 [HINATA BOT] Sub-bot detectado en ${subBotDir}. Despertando...`));
+          console.log(chalk.magenta(`Sub-bot detectado en ${subBotDir}. Despertando...`));
           await reconnectSubBot(botPath);
         } else {
-          console.log(chalk.yellow(`⚠️ [HINATA BOT] Sub-bot latente en ${subBotDir} (sin creds.json)`));
+          console.log(chalk.yellow(`Sub-bot latente en ${subBotDir} (sin creds.json)`));
         }
       }
     }
-    console.log(chalk.magenta(`✅ [HINATA BOT] Proceso de sub-bots completado.`));
+    console.log(chalk.magenta(`Proceso de sub-bots completado.`));
   } else {
-    console.log(chalk.gray(`🌙 [HINATA BOT] No hay sub-bots para despertar.`));
+    console.log(chalk.gray(`No hay sub-bots para despertar.`));
   }
 }
 
@@ -288,22 +288,22 @@ await startSubBots();
 
 async function handleLogin() {
   if (conn.authState.creds.registered) {
-    console.log(chalk.green('✅ [HINATA BOT] Ya registrada.'));
+    console.log(chalk.green('Ya registrada.'));
     return;
   }
 
   let loginMethod = await question(
     chalk.green(`\n` +
-    `╔════════════════════════════════════╗\n` +
-    `║     𑁍 HINATA BOT MODE 𑁍          ║\n` +
-    `╠════════════════════════════════════╣\n` +
-    `║ ¿Cómo deseas activar el Byakugan?  ║\n` +
-    `║                                    ║\n` +
-    `║ 📱 Escribe "code" para código      ║\n` +
-    `║    de emparejamiento               ║\n` +
-    `║                                    ║\n` +
-    `║ 🔳 Presiona Enter para QR          ║\n` +
-    `╚════════════════════════════════════╝\n` +
+    `========================================\n` +
+    `     HINATA BOT MODE                    \n` +
+    `========================================\n` +
+    ` Como deseas activar el Byakugan?       \n` +
+    `                                        \n` +
+    ` Escribe "code" para codigo             \n` +
+    `    de emparejamiento                   \n` +
+    `                                        \n` +
+    ` Presiona Enter para QR                 \n` +
+    `========================================\n` +
     `\n` +
     `> `
   ));
@@ -311,7 +311,7 @@ async function handleLogin() {
   loginMethod = loginMethod.toLowerCase().trim();
 
   if (loginMethod === 'code') {
-    let phoneNumber = await question(chalk.cyan('📱 Ingresa el número de WhatsApp (con código país, ej: 51910227479):\n> '));
+    let phoneNumber = await question(chalk.cyan('Ingresa el numero de WhatsApp (con codigo pais, ej: 51910227479):\n> '));
     phoneNumber = phoneNumber.replace(/\D/g, '');
 
     if (phoneNumber.startsWith('52') && phoneNumber.length === 12) {
@@ -325,29 +325,29 @@ async function handleLogin() {
     if (typeof conn.requestPairingCode === 'function') {
       try {
         if (conn.ws.readyState === ws.OPEN) {
-          console.log(chalk.yellow('𑁍 Generando código de emparejamiento...'));
+          console.log(chalk.yellow('Generando codigo de emparejamiento...'));
           let code = await conn.requestPairingCode(phoneNumber);
           code = code?.match(/.{1,4}/g)?.join('-') || code;
-          console.log(chalk.bold.green('\n════════════════════════════════════'));
-          console.log(chalk.bold.yellow(`   🔐 CÓDIGO DE EMPAREJAMIENTO:`));
+          console.log(chalk.bold.green('\n========================================'));
+          console.log(chalk.bold.yellow(`   CODIGO DE EMPAREJAMIENTO:`));
           console.log(chalk.bold.cyan(`      ${code}`));
-          console.log(chalk.bold.green('════════════════════════════════════\n'));
+          console.log(chalk.bold.green('========================================\n'));
         } else {
-          console.log(chalk.red('❌ La conexión principal no está abierta. Intenta nuevamente.'));
+          console.log(chalk.red('La conexion principal no esta abierta. Intenta nuevamente.'));
         }
       } catch (e) {
-        console.log(chalk.red('❌ Error al solicitar código de emparejamiento:'), e.message || e);
+        console.log(chalk.red('Error al solicitar codigo de emparejamiento:'), e.message || e);
       }
     } else {
-      console.log(chalk.red('❌ Tu versión de Baileys no soporta emparejamiento por código.'));
+      console.log(chalk.red('Tu version de Baileys no soporta emparejamiento por codigo.'));
     }
   } else {
-    console.log(chalk.yellow('🔳 Generando código QR, escanéalo con tu WhatsApp...\n'));
+    console.log(chalk.yellow('Generando codigo QR, escanealo con tu WhatsApp...\n'));
     conn.ev.on('connection.update', ({ qr }) => {
       if (qr) {
-        console.log(chalk.green('📱 ESCANEA ESTE CÓDIGO QR:'));
+        console.log(chalk.green('ESCANEA ESTE CODIGO QR:'));
         qrcode.generate(qr, { small: true });
-        console.log(chalk.yellow('\n⏳ Esperando escaneo...\n'));
+        console.log(chalk.yellow('\nEsperando escaneo...\n'));
       }
     });
   }
@@ -364,7 +364,7 @@ if (!opts['test']) {
       if (global.db.data && global.isDatabaseModified) {
         await global.db.write();
         global.isDatabaseModified = false;
-        console.log(chalk.gray('💾 [HINATA BOT] Base de datos guardada'));
+        console.log(chalk.gray('Base de datos guardada'));
       }
       if (opts['autocleartmp']) {
         const tmp = [tmpdir(), 'tmp', 'serbot'];
@@ -390,16 +390,16 @@ function clearTmp() {
 setInterval(() => {
   if (global.stopped === 'close' || !conn || !conn.user) return;
   clearTmp();
-  console.log(chalk.gray('🧹 [HINATA BOT] Limpieza temporal completada'));
+  console.log(chalk.gray('Limpieza temporal completada'));
 }, 180000);
 
 if (typeof global.gc === 'function') {
   setInterval(() => {
-    console.log(chalk.gray(`🧠 [HINATA BOT] Optimizando chakra...`));
+    console.log(chalk.gray(`Optimizando chakra...`));
     global.gc();
   }, 180000);
 } else {
-  console.log(chalk.yellow(`⚠️ [HINATA BOT] Para optimizar memoria, ejecuta con --expose-gc`));
+  console.log(chalk.yellow(`Para optimizar memoria, ejecuta con --expose-gc`));
 }
 
 async function connectionUpdate(update) {
@@ -408,7 +408,7 @@ async function connectionUpdate(update) {
 
   if (isNewLogin) {
     conn.isInit = true;
-    console.log(chalk.green('✅ [HINATA BOT] Nuevo login detectado'));
+    console.log(chalk.green('Nuevo login detectado'));
   }
 
   const code =
@@ -423,44 +423,44 @@ async function connectionUpdate(update) {
   if (global.db.data == null) await loadDatabase();
 
   if (connection === 'open') {
-    console.log(chalk.bold.green('\n════════════════════════════════════'));
-    console.log(chalk.bold.yellow('   𑁍 HINATA BOT HA DESPERTADO 𑁍'));
-    console.log(chalk.bold.cyan(`   👤 Usuario: ${conn.user?.name || 'Hinata'}`));
-    console.log(chalk.bold.cyan(`   📱 Número: ${conn.user?.id?.split(':')[0] || 'Desconocido'}`));
-    console.log(chalk.bold.green('════════════════════════════════════\n'));
+    console.log(chalk.bold.green('\n========================================'));
+    console.log(chalk.bold.yellow('   HINATA BOT HA DESPERTADO'));
+    console.log(chalk.bold.cyan(`   Usuario: ${conn.user?.name || 'Hinata'}`));
+    console.log(chalk.bold.cyan(`   Numero: ${conn.user?.id?.split(':')[0] || 'Desconocido'}`));
+    console.log(chalk.bold.green('========================================\n'));
   }
 
   const reason = new Boom(lastDisconnect?.error)?.output?.statusCode;
 
   if (reason === 405) {
     if (existsSync('./sessions/creds.json')) unlinkSync('./sessions/creds.json');
-    console.log(chalk.bold.redBright(`⚠️ Conexión reemplazada, reiniciando...`));
+    console.log(chalk.bold.redBright(`Conexion reemplazada, reiniciando...`));
     process.send('reset');
   }
 
   if (connection === 'close') {
     switch (reason) {
       case DisconnectReason.badSession:
-        conn.logger.error(`❌ Sesión incorrecta, elimina la carpeta ${global.authFile}`);
+        conn.logger.error(`Sesion incorrecta, elimina la carpeta ${global.authFile}`);
         break;
       case DisconnectReason.connectionClosed:
       case DisconnectReason.connectionLost:
       case DisconnectReason.timedOut:
-        conn.logger.warn(`⚠️ Conexión perdida, reconectando...`);
+        conn.logger.warn(`Conexion perdida, reconectando...`);
         await global.reloadHandler(true).catch(console.error);
         break;
       case DisconnectReason.connectionReplaced:
-        conn.logger.error(`⚠️ Conexión reemplazada, se abrió otra sesión`);
+        conn.logger.error(`Conexion reemplazada, se abrio otra sesion`);
         break;
       case DisconnectReason.loggedOut:
-        conn.logger.error(`❌ Sesión cerrada, elimina la carpeta ${global.authFile}`);
+        conn.logger.error(`Sesion cerrada, elimina la carpeta ${global.authFile}`);
         break;
       case DisconnectReason.restartRequired:
-        conn.logger.info(`🔄 Reinicio necesario`);
+        conn.logger.info(`Reinicio necesario`);
         await global.reloadHandler(true).catch(console.error);
         break;
       default:
-        conn.logger.warn(`❓ Desconexión desconocida: ${reason || ''}`);
+        conn.logger.warn(`Desconexion desconocida: ${reason || ''}`);
         await global.reloadHandler(true).catch(console.error);
         break;
     }
@@ -468,7 +468,7 @@ async function connectionUpdate(update) {
 }
 
 process.on('uncaughtException', (err) => {
-  console.error(chalk.red('💥 [HINATA BOT] Error no capturado:'), err);
+  console.error(chalk.red('Error no capturado:'), err);
 });
 
 let isInit = true;
@@ -513,7 +513,7 @@ const pluginFilter = (filename) => /\.js$/.test(filename);
 global.plugins = {};
 
 async function filesInit() {
-  console.log(chalk.blue('📂 [HINATA BOT] Cargando plugins...'));
+  console.log(chalk.blue('Cargando plugins...'));
   let loaded = 0;
   for (const filename of readdirSync(pluginFolder).filter(pluginFilter)) {
     try {
@@ -526,7 +526,7 @@ async function filesInit() {
       delete global.plugins[filename];
     }
   }
-  console.log(chalk.green(`✅ [HINATA BOT] ${loaded} plugins cargados correctamente`));
+  console.log(chalk.green(`${loaded} plugins cargados correctamente`));
 }
 
 await filesInit();
@@ -535,24 +535,24 @@ global.reload = async (_ev, filename) => {
   if (pluginFilter(filename)) {
     const dir = global.__filename(join(pluginFolder, filename), true);
     if (filename in global.plugins) {
-      if (existsSync(dir)) conn.logger.info(`🔄 Plugin actualizado - '${filename}'`);
+      if (existsSync(dir)) conn.logger.info(`Plugin actualizado - '${filename}'`);
       else {
-        conn.logger.warn(`🗑️ Plugin eliminado - '${filename}'`);
+        conn.logger.warn(`Plugin eliminado - '${filename}'`);
         return delete global.plugins[filename];
       }
-    } else conn.logger.info(`✨ Nuevo plugin - '${filename}'`);
+    } else conn.logger.info(`Nuevo plugin - '${filename}'`);
 
     const err = syntaxerror(readFileSync(dir), filename, {
       sourceType: 'module',
       allowAwaitOutsideFunction: true,
     });
-    if (err) conn.logger.error(`❌ Error de sintaxis en '${filename}':\n${format(err)}`);
+    if (err) conn.logger.error(`Error de sintaxis en '${filename}':\n${format(err)}`);
     else {
       try {
         const module = await import(`${global.__filename(dir)}?update=${Date.now()}`);
         global.plugins[filename] = module.default || module;
       } catch (e) {
-        conn.logger.error(`❌ Error al cargar plugin '${filename}':\n${format(e)}`);
+        conn.logger.error(`Error al cargar plugin '${filename}':\n${format(e)}`);
       } finally {
         global.plugins = Object.fromEntries(Object.entries(global.plugins).sort(([a], [b]) => a.localeCompare(b)));
       }
@@ -564,12 +564,65 @@ Object.freeze(global.reload);
 watch(pluginFolder, global.reload);
 await global.reloadHandler();
 
-console.log(chalk.bold.magenta('\n' + '⭐'.repeat(30)));
-console.log(chalk.bold.yellow('   𑁍 HINATA BOT - BYAKUGAN COMPLETO 𑁍'));
-console.log(chalk.bold.cyan('   「La bot está lista para ayudar」'));
-console.log(chalk.bold.magenta('⭐'.repeat(30) + '\n'));
+console.log(chalk.bold.magenta('\n' + '*'.repeat(30)));
+console.log(chalk.bold.yellow('   HINATA BOT - BYAKUGAN COMPLETO'));
+console.log(chalk.bold.cyan('   La bot esta lista para ayudar'));
+console.log(chalk.bold.magenta('*'.repeat(30) + '\n'));
+
+// ============================================
+// SISTEMA BOT ON/OFF (verificación en index.js)
+// ============================================
+const BOT_STATE_FILE = path.join(process.cwd(), 'storage', 'bot_state.json');
+
+function loadBotState() {
+  try {
+    if (!fs.existsSync(BOT_STATE_FILE)) {
+      const dir = path.dirname(BOT_STATE_FILE);
+      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(BOT_STATE_FILE, JSON.stringify({}, null, 2));
+      return {};
+    }
+    return JSON.parse(fs.readFileSync(BOT_STATE_FILE, 'utf-8'));
+  } catch {
+    return {};
+  }
+}
+
+function isBotOff(groupId) {
+  const state = loadBotState();
+  return state[groupId] === true;
+}
+
+// Modificar el handler para verificar estado del bot
+const originalHandler = handler;
+handler = async (m, ...args) => {
+  const from = m.key?.remoteJid;
+  if (from && from.endsWith('@g.us') && isBotOff(from)) {
+    // Si el bot está apagado, solo admin/owner puede usarlo
+    const sender = m.key.participant || from;
+    let isAdmin = false;
+    let isOwner = false;
+    
+    try {
+      const groupMetadata = await conn.groupMetadata(from);
+      isAdmin = groupMetadata.participants.find(p => p.id === sender)?.admin;
+    } catch {}
+    
+    isOwner = global.opts.owner === sender.split('@')[0] || 
+              (global.db.data.users[sender]?.owner === true);
+    
+    if (!isAdmin && !isOwner) return;
+  }
+  return originalHandler(m, ...args);
+};
+
+// Sobrescribir handler en conexiones existentes
+global.conn.handler = handler.bind(global.conn);
 
 conn.ev.on('group-participants.update', async (update) => {
+  // Verificar si el bot está apagado en este grupo
+  if (isBotOff(update.id)) return;
+  
   const { id, participants, action } = update
   let chat = global.db.data.chats[id]
   if (!chat || chat.welcome !== true) return
@@ -591,13 +644,12 @@ conn.ev.on('group-participants.update', async (update) => {
           .replace(/@group/g, metadata.subject)
           .replace(/@members/g, metadata.participants.length)
       } else {
-        texto = '⛩️ 「 HINATA BOT 」 ⛩️\n\n'
-        texto += '桜 » *BIENVENID@*\n'
-        texto += '風 » @' + user.split('@')[0] + '\n'
-        texto += '花 » ' + metadata.subject + '\n'
-        texto += '桜 » Miembros: ' + metadata.participants.length + '\n\n'
-        texto += '✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧\n\n'
-        texto += '> Gracias por unirte ♡'
+        texto = '*_Hinata-Bot_*\n\n'
+        texto += '➮ BIENVENID@\n'
+        texto += '✰ @' + user.split('@')[0] + '\n'
+        texto += '✰ *_' + metadata.subject + '_*\n'
+        texto += '✰ Miembros: *_' + metadata.participants.length + '_*\n\n'
+        texto += '> Gracias por unirte'
       }
 
       await conn.sendMessage(id, {
@@ -613,12 +665,12 @@ conn.ev.on('group-participants.update', async (update) => {
           .replace(/@group/g, metadata.subject)
           .replace(/@members/g, metadata.participants.length)
       } else {
-        texto = '⛩️ 「 HINATA BOT 」 ⛩️\n\n'
-        texto += '桜 » *ADIOS*\n'
-        texto += '風 » @' + user.split('@')[0] + '\n'
-        texto += '花 » ' + metadata.subject + '\n'
-        texto += '桜 » Miembros: ' + metadata.participants.length + '\n\n'
-        texto += '✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧'
+        texto = '*_Hinata-Bot_*\n\n'
+        texto += '➮ ADIOS\n'
+        texto += '✰ @' + user.split('@')[0] + '\n'
+        texto += '✰ *_' + metadata.subject + '_*\n'
+        texto += '✰ Miembros: *_' + metadata.participants.length + '_*\n\n'
+        texto += '> Esperamos verte de vuelta'
       }
 
       await conn.sendMessage(id, {
