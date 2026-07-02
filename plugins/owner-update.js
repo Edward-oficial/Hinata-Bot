@@ -3,12 +3,10 @@ import { exec } from 'child_process'
 const handler = async (m, { conn }) => {
   let who = m.sender
 
-  let textoEspera = '࿇ ══━━━✥◈✥━━━══ ࿇\n'
-  textoEspera += '   𝕳𝖎𝖓𝖆𝖙𝖆 𝖀𝖕𝖉𝖆𝖙𝖊\n'
-  textoEspera += '࿇ ══━━━✥◈✥━━━══ ࿇\n\n'
-  textoEspera += '𖣔 ʙᴜsᴄᴀɴᴅᴏ ᴀᴄᴛᴜᴀʟɪᴢᴀᴄɪᴏɴᴇs ˚ʚ♡ɞ˚\n'
-  textoEspera += '❧ Espera un momento...\n\n'
-  textoEspera += '࿇ ══━━━✥◈✥━━━══ ࿇'
+  let textoEspera = '*_Hinata-Bot_*\n\n'
+  textoEspera += '➮ ACTUALIZANDO\n'
+  textoEspera += '✰ Buscando actualizaciones...\n'
+  textoEspera += '✰ Espera un momento...'
 
   await conn.sendMessage(m.chat, { text: textoEspera }, { quoted: m })
 
@@ -22,34 +20,32 @@ const handler = async (m, { conn }) => {
         motivo = 'No es un repositorio git'
         solucion = 'Clona el bot con git clone'
       } else if (error.includes('Could not resolve host')) {
-        motivo = 'Sin conexión a internet'
-        solucion = 'Verifica tu conexión'
+        motivo = 'Sin conexion a internet'
+        solucion = 'Verifica tu conexion'
       } else if (error.includes('Merge conflict')) {
-        motivo = 'Conflicto de fusión detectado'
-        solucion = 'Usa #exec git stash && git pull --force'
+        motivo = 'Conflicto de fusion detectado'
+        solucion = 'Usa fixpull para forzar'
       } else if (error.includes('Please commit')) {
         motivo = 'Tienes cambios locales sin guardar'
-        solucion = 'Usa #exec git stash && git pull'
+        solucion = 'Usa fixpull para forzar'
       }
 
-      let textoError = '࿇ ══━━━✥◈✥━━━══ ࿇\n'
-      textoError += '   𝕳𝖎𝖓𝖆𝖙𝖆 𝖀𝖕𝖉𝖆𝖙𝖊\n'
-      textoError += '࿇ ══━━━✥◈✥━━━══ ࿇\n\n'
-      textoError += '𖣔 ᴇʀʀᴏʀ ˚ʚ♡ɞ˚\n'
-      textoError += '❧ ' + motivo + '\n'
-      textoError += '> ' + solucion + '\n\n'
-      textoError += '࿇ ══━━━✥◈✥━━━══ ࿇'
+      let textoError = '*_Hinata-Bot_*\n\n'
+      textoError += '➮ ERROR\n'
+      textoError += '✰ ' + motivo + '\n'
+      textoError += '✰ Solucion: ' + solucion
 
       await conn.sendMessage(m.chat, { text: textoError }, { quoted: m })
       return
     }
 
     if (stdout.includes('Already up to date')) {
-      let textoAlDia = '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ㅤ֢ㅤׄㅤׅ\n\n'
-      textoAlDia += '𖣔 ᴇsᴛᴀᴅᴏ ˚ʚ♡ɞ˚\n'
-      textoAlDia += '❧ Hinata ya está en su mejor versión\n'
-      textoAlDia += '❧ No hay actualizaciones pendientes\n\n'
-      textoAlDia += '> Solicitado por @' + who.split('@')[0]
+      let textoAlDia = '*_Hinata-Bot_*\n\n'
+      textoAlDia += '➮ ESTADO\n'
+      textoAlDia += '✰ Hinata ya esta en su mejor version\n'
+      textoAlDia += '✰ No hay actualizaciones pendientes\n\n'
+      textoAlDia += '➮ SOLICITADO POR\n'
+      textoAlDia += '✰ @' + who.split('@')[0]
 
       await conn.sendMessage(m.chat, {
         image: { url: 'https://files.catbox.moe/b7a14a.png' },
@@ -65,35 +61,35 @@ const handler = async (m, { conn }) => {
     let filesCreados = creados.map(c => c.split(' ').pop())
     let filesEliminados = eliminados.map(c => c.split(' ').pop())
 
-    let texto = '𑁍ࠬܓ ⁾ ㅤׄㅤׅㅤׄ HINATA BOT ACTUALIZADA ㅤ֢ㅤׄㅤׅ\n\n'
+    let texto = '*_Hinata-Bot Actualizada_*\n\n'
 
-    texto += '𖣔 ʀᴇsᴜᴍᴇɴ ˚ʚ♡ɞ˚\n'
-    texto += '❧ Hinata se ha renovado\n\n'
+    texto += '➮ RESUMEN\n'
+    texto += '✰ Hinata se ha renovado\n\n'
 
     if (filesCreados.length > 0) {
-      texto += '𖣔 ɴᴜᴇᴠᴏs ᴀʀᴄʜɪᴠᴏs ˚ʚ♡ɞ˚\n'
+      texto += '➮ NUEVOS ARCHIVOS\n'
       for (let file of filesCreados.slice(0, 15)) {
-        texto += '❧ ' + file + '\n'
+        texto += '✰ ' + file + '\n'
       }
       if (filesCreados.length > 15) {
-        texto += '> y ' + (filesCreados.length - 15) + ' archivo(s) más\n'
+        texto += '> y ' + (filesCreados.length - 15) + ' archivo(s) mas\n'
       }
       texto += '\n'
     }
 
     let changedMatch = stdout.match(/(\d+) files? changed/)
     if (changedMatch) {
-      texto += '𖣔 ᴀʀᴄʜɪᴠᴏs ᴍᴏᴅɪғɪᴄᴀᴅᴏs ˚ʚ♡ɞ˚\n'
-      texto += '❧ ' + changedMatch[1] + ' archivo(s)\n\n'
+      texto += '➮ ARCHIVOS MODIFICADOS\n'
+      texto += '✰ ' + changedMatch[1] + ' archivo(s)\n\n'
     }
 
     if (filesEliminados.length > 0) {
-      texto += '𖣔 ᴀʀᴄʜɪᴠᴏs ᴇʟɪᴍɪɴᴀᴅᴏs ˚ʚ♡ɞ˚\n'
+      texto += '➮ ARCHIVOS ELIMINADOS\n'
       for (let file of filesEliminados.slice(0, 15)) {
-        texto += '❧ ' + file + '\n'
+        texto += '✰ ' + file + '\n'
       }
       if (filesEliminados.length > 15) {
-        texto += '> y ' + (filesEliminados.length - 15) + ' archivo(s) más\n'
+        texto += '> y ' + (filesEliminados.length - 15) + ' archivo(s) mas\n'
       }
       texto += '\n'
     }
@@ -101,12 +97,13 @@ const handler = async (m, { conn }) => {
     let summary = stdout.match(/\d+ files? changed, \d+ insertions?\(\+\), \d+ deletions?\(-\)/)
     if (summary) {
       let nums = summary[0].match(/\d+/g)
-      texto += '𖣔 ᴄᴀᴍʙɪᴏs ᴅᴇ ᴄóᴅɪɢᴏ ˚ʚ♡ɞ˚\n'
-      texto += '❧ +' + nums[1] + ' línea(s) agregada(s)\n'
-      texto += '❧ -' + nums[2] + ' línea(s) eliminada(s)\n\n'
+      texto += '➮ CAMBIOS DE CODIGO\n'
+      texto += '✰ +' + nums[1] + ' linea(s) agregada(s)\n'
+      texto += '✰ -' + nums[2] + ' linea(s) eliminada(s)\n\n'
     }
 
-    texto += '> Actualizado por @' + who.split('@')[0]
+    texto += '➮ SOLICITADO POR\n'
+    texto += '✰ @' + who.split('@')[0]
 
     await conn.sendMessage(m.chat, {
       image: { url: 'https://files.catbox.moe/b7a14a.png' },
@@ -121,10 +118,10 @@ const handler = async (m, { conn }) => {
   })
 }
 
-handler.help = ['update']
+handler.help = ['update', 'fix']
 handler.tags = ['owner']
-handler.command = /^(update|actualizar)$/i
-handler.desc = 'Actualiza Hinata a la última versión'
+handler.command = /^(update|actualizar|fix|fixpull)$/i
+handler.desc = 'Actualiza o repara Hinata'
 handler.owner = true
 
 export default handler
