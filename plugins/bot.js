@@ -1,9 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 
-// ============================================
-// BOT ON/OFF POR GRUPO (ADMINS Y OWNERS)
-// ============================================
 const BOT_STATE_FILE = path.join(process.cwd(), 'storage', 'bot_state.json');
 
 function loadBotState() {
@@ -43,9 +40,6 @@ function setBotState(groupId, enabled) {
   saveBotState(state);
 }
 
-// ============================================
-// COMANDO aparte para admins
-// ============================================
 let handler = async (m, { conn, isAdmin, isOwner }) => {
   const from = m.chat
   
