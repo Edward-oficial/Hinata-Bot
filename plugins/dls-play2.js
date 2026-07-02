@@ -4,7 +4,7 @@ import {
   prepareWAMessageMedia,
   proto
 } from '@whiskeysockets/baileys'
-import ffmpeg from 'fluent-ffmpeg'
+import { spawn } from 'child_process'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -40,56 +40,80 @@ async function downloadFile(url, outputPath) {
   fs.writeFileSync(outputPath, Buffer.from(buffer))
 }
 
-async function repairVideoWithFFmpeg(inputPath, outputPath) {
+function repairVideoWithFFmpeg(inputPath, outputPath) {
   return new Promise((resolve, reject) => {
-    ffmpeg(inputPath)
-      .outputOptions([
-        '-c copy',
-        '-movflags +faststart',
-        '-fflags +genpts'
-      ])
-      .on('end', () => resolve())
-      .on('error', (err) => reject(err))
-      .save(outputPath)
+    const args = [
+      '-y',
+      '-fflags', '+genpts',
+      '-i', inputPath,
+      '-c:v', 'libx264',
+      '-c:a', 'aac',
+      '-pix_fmt', 'yuv420p',
+      '-preset', 'veryfast',
+      '-crf', '23',
+      '-movflags', '+faststart',
+      '-max_muxing_queue_size', '1024',
+      outputPath
+    ]
+
+    const proc = spawn('ffmpeg', args)
+
+    let stderr = ''
+    proc.stderr.on('data', (d) => { stderr += d.toString() })
+
+    proc.on('close', (code) => {
+      if (code === 0 && fs.existsSync(outputPath)) {
+        resolve()
+      } else {
+        reject(new Error(`ffmpeg salió con código ${code}\n${stderr.slice(-800)}`))
+      }
+    })
+
+    proc.on('error', (err) => {
+      reject(new Error(`No se pudo ejecutar ffmpeg: ${err.message}`))
+    })
   })
 }
 
 async function sendVideo(conn, m, videoUrl, title) {
   const res = await fetch(`${EDWARD_API}/download/ytvideo?url=${encodeURIComponent(videoUrl)}&apiKey=${EDWARD_KEY}`)
   const json = await res.json()
-  
+
   if (!json.status || !json.result?.download_url) throw new Error('No se pudo obtener el video.')
-  
+
   const finalTitle = safeFileName(json.result.title || title)
   const quality = json.result.quality || '360p'
   const tempDir = path.join(__dirname, 'temp')
   if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir)
-  
+
   const inputPath = path.join(tempDir, `${Date.now()}_input.mp4`)
   const outputPath = path.join(tempDir, `${Date.now()}_output.mp4`)
-  
+
   try {
     await downloadFile(json.result.download_url, inputPath)
-    
+
+    const inputStats = fs.statSync(inputPath)
+    if (inputStats.size < 10000) throw new Error('El archivo descargado está vacío o corrupto.')
+
     await conn.sendMessage(m.chat, {
       text: `🔄 *Reparando video para WhatsApp...*\n🎬 ${finalTitle}`
     }, { quoted: m })
-    
+
     await repairVideoWithFFmpeg(inputPath, outputPath)
-    
+
     const stats = fs.statSync(outputPath)
     const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2)
-    
+
     await conn.sendMessage(m.chat, {
       video: { url: outputPath },
       caption: `🎬 ${finalTitle}\n📹 Calidad: ${quality}\n📦 Tamaño: ${fileSizeMB}MB`,
       mimetype: 'video/mp4',
       fileName: finalTitle + '.mp4'
     }, { quoted: m })
-    
+
     fs.unlinkSync(inputPath)
     fs.unlinkSync(outputPath)
-    
+
     return finalTitle
   } catch (error) {
     if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath)
@@ -144,7 +168,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const res = await fetch(`${EDWARD_API}/search/youtube?apiKey=${EDWARD_KEY}&query=${encodeURIComponent(input)}`)
     const data = await res.json()
-    
+
     if (!data.status || !data.data?.length) throw new Error('No se encontraron resultados')
 
     const resultados = data.data.slice(0, 10)
