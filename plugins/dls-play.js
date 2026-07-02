@@ -5,8 +5,9 @@ import {
   proto
 } from '@whiskeysockets/baileys'
 
-const VIGILANTE_API = 'https://elvigilante-api.onrender.com/api'
-const VIGILANTE_KEY = 'elvigilante'
+// ========== API de Edward ==========
+const EDWARD_API = 'https://dv-edward-api.onrender.com/api'
+const EDWARD_KEY = 'edward'
 
 const _processing = new Set()
 
@@ -29,10 +30,14 @@ function devolverDiamante(user, anterior) {
   else user.diamond = anterior
 }
 
+// ========== sendAudio con ENDPOINT CORRECTO ==========
 async function sendAudio(conn, m, videoUrl, title) {
-  const res = await fetch(`${VIGILANTE_API}/download/ytaudio?url=${encodeURIComponent(videoUrl)}&apiKey=${VIGILANTE_KEY}`)
+  // ✅ ENDPOINT CORRECTO: /download/ytaudio
+  const res = await fetch(`${EDWARD_API}/download/ytaudio?url=${encodeURIComponent(videoUrl)}&apiKey=${EDWARD_KEY}`)
   const json = await res.json()
+  
   if (!json.status || !json.result?.download_url) throw new Error('No se pudo obtener el audio.')
+  
   const finalTitle = safeFileName(json.result.title || title)
 
   await conn.sendMessage(m.chat, {
@@ -44,7 +49,7 @@ async function sendAudio(conn, m, videoUrl, title) {
   if (json.result.thumbnail) {
     await conn.sendMessage(m.chat, {
       image: { url: json.result.thumbnail },
-      caption: `🎵 ${finalTitle}\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com`
+      caption: `🎵 ${finalTitle}\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com`
     }, { quoted: m })
   }
 
@@ -68,7 +73,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - YOUTUBE', subtitle: 'Descarga música de YouTube', hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🎵 「 HINATA YOUTUBE 」 🎵\n\n💫 » Descarga audio de YouTube\n\n> ${usedPrefix}${command} <nombre o link>\n> Ejemplo: ${usedPrefix}${command} Naruto Opening 1\n> 💎 Cuesta 1 diamante por descarga\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com` },
+      body: { text: `🎵 「 HINATA YOUTUBE 」 🎵\n\n💫 » Descarga audio de YouTube\n\n> ${usedPrefix}${command} <nombre o link>\n> Ejemplo: ${usedPrefix}${command} Naruto Opening 1\n> 💎 Cuesta 1 diamante por descarga\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com` },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎵 YOUTUBE', sections: [{ title: '¿Qué deseas hacer?', rows: [{ header: '🔍 BUSCAR', title: 'Buscar música', description: 'Escribe el nombre después del comando', id: 'ytinfo' }] }] }) }] }
     })
@@ -83,7 +88,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     return conn.sendMessage(m.chat, {
-      text: `🎵 「 HINATA YOUTUBE 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com`
+      text: `🎵 「 HINATA YOUTUBE 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com`
     }, { quoted: m })
   }
 
@@ -95,8 +100,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 
   try {
-    const res = await fetch(`${VIGILANTE_API}/search/youtube?apiKey=${VIGILANTE_KEY}&query=${encodeURIComponent(input)}`)
+    const res = await fetch(`${EDWARD_API}/search/youtube?apiKey=${EDWARD_KEY}&query=${encodeURIComponent(input)}`)
     const data = await res.json()
+    
     if (!data.status || !data.data?.length) throw new Error('No se encontraron resultados')
 
     const resultados = data.data.slice(0, 10)
@@ -114,7 +120,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - YOUTUBE', subtitle: `Resultados: ${input}`, hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🔍 「 RESULTADOS 」\n\n💫 » Búsqueda: *${input}*\n📋 ${resultados.length} resultados encontrados\n\n> Elige el que quieras descargar\n> 💎 1 diamante\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com` },
+      body: { text: `🔍 「 RESULTADOS 」\n\n💫 » Búsqueda: *${input}*\n📋 ${resultados.length} resultados encontrados\n\n> Elige el que quieras descargar\n> 💎 1 diamante\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com` },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎵 RESULTADOS', sections: [{ title: `📋 ${input.toUpperCase().slice(0, 24)}`, rows }] }) }] }
     })
@@ -134,7 +140,7 @@ async function _descargarAudio(conn, m, videoUrl, title) {
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     await conn.sendMessage(m.chat, {
-      text: `🎵 「 HINATA YOUTUBE 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com`
+      text: `🎵 「 HINATA YOUTUBE 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com`
     }, { quoted: m })
     return
   }
@@ -144,13 +150,13 @@ async function _descargarAudio(conn, m, videoUrl, title) {
 
   await m.react('⏳')
   await conn.sendMessage(m.chat, {
-    text: `🎵 *Descargando audio...*\n🎧 ${title}\n💎 -1 diamante\n⏳ Espera un momento...\n\n> 🎧 API Oficial de El Vigilante`
+    text: `🎵 *Descargando audio...*\n🎧 ${title}\n💎 -1 diamante\n⏳ Espera un momento...\n\n> 🎧 API by Edward`
   }, { quoted: m })
 
   try {
     const finalTitle = await sendAudio(conn, m, videoUrl, title)
     await conn.sendMessage(m.chat, {
-      text: `✅ *Descarga completada*\n\n🎵 » ${finalTitle || title}\n💎 » Diamantes restantes: ${restantes}\n\n> 🎧 API Oficial de El Vigilante\n> 🔗 https://elvigilante-api.onrender.com`
+      text: `✅ *Descarga completada*\n\n🎵 » ${finalTitle || title}\n💎 » Diamantes restantes: ${restantes}\n\n> 🎧 API by Edward\n> 🔗 https://dv-edward-api.onrender.com`
     }, { quoted: m })
     await m.react('✅')
   } catch (e) {
@@ -206,6 +212,6 @@ handler.before = async (m, { conn }) => {
 handler.help    = ['yt', 'play', 'audio']
 handler.tags    = ['downloader']
 handler.command = /^(yt|ytmp3|audio|mp3|song|play|musica|cancion)$/i
-handler.desc    = 'Descarga audio de YouTube 💎1 | API Oficial de El Vigilante'
+handler.desc    = 'Descarga audio de YouTube 💎1 | API by Edward'
 
 export default handler
