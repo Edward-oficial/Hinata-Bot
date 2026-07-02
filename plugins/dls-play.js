@@ -50,7 +50,7 @@ async function sendAudio(conn, m, videoUrl, title) {
   if (json.result.thumbnail) {
     await conn.sendMessage(m.chat, {
       image: { url: json.result.thumbnail },
-      caption: `${finalTitle}\n\nAutor: ${json.result.author || 'Desconocido'}\n\n➮ API by Edward`
+      caption: `*_${finalTitle}_*\n\nAutor: *_${json.result.author || 'Desconocido'}_*\n\n➮ API by Edward`
     }, { quoted: m })
   }
 
@@ -74,7 +74,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - YOUTUBE', subtitle: 'Descarga musica de YouTube', hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `YOUTUBE\n\nBusca y descarga audio de YouTube\n\nUso: ${usedPrefix}${command} <nombre o link>\nEjemplo: ${usedPrefix}${command} Naruto Opening 1\n\nCuesta 1 diamante por descarga\n\n➮ API by Edward` },
+      body: { text: `*_YOUTUBE_*\n\nBusca y descarga audio de YouTube\n\nUso: *_${usedPrefix}${command} <nombre o link>_*\nEjemplo: *_${usedPrefix}${command} Naruto Opening 1_*\n\n*_Cuesta 1 diamante por descarga_*\n\n➮ API by Edward` },
       footer: { text: 'HINATA BOT' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'YOUTUBE', sections: [{ title: 'Que deseas hacer', rows: [{ header: 'BUSCAR', title: 'Buscar musica', description: 'Escribe el nombre despues del comando', id: 'ytinfo' }] }] }) }] }
     })
@@ -89,7 +89,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     return conn.sendMessage(m.chat, {
-      text: `YOUTUBE\n\nNo tienes suficientes diamantes\nNecesitas: 1 | Tienes: ${diamantes}\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
+      text: `*_YOUTUBE_*\n\nNo tienes suficientes diamantes\nNecesitas: *_1_* | Tienes: *_${diamantes}_*\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
     }, { quoted: m })
   }
 
@@ -121,7 +121,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - YOUTUBE', subtitle: `Resultados: ${input}`, hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `RESULTADOS\n\nBusqueda: ${input}\n${resultados.length} resultados encontrados\n\nElige el que quieras descargar\nCuesta 1 diamante\n\n➮ API by Edward` },
+      body: { text: `*_RESULTADOS_*\n\nBusqueda: *_${input}_*\n*_${resultados.length}_* resultados encontrados\n\nElige el que quieras descargar\n*_Cuesta 1 diamante_*\n\n➮ API by Edward` },
       footer: { text: 'HINATA BOT' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'RESULTADOS', sections: [{ title: input.toUpperCase().slice(0, 24), rows }] }) }] }
     })
@@ -141,7 +141,7 @@ async function _descargarAudio(conn, m, videoUrl, title) {
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     await conn.sendMessage(m.chat, {
-      text: `YOUTUBE\n\nNo tienes suficientes diamantes\nNecesitas: 1 | Tienes: ${diamantes}\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
+      text: `*_YOUTUBE_*\n\nNo tienes suficientes diamantes\nNecesitas: *_1_* | Tienes: *_${diamantes}_*\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
     }, { quoted: m })
     return
   }
@@ -151,20 +151,20 @@ async function _descargarAudio(conn, m, videoUrl, title) {
 
   await m.react('⏳')
   await conn.sendMessage(m.chat, {
-    text: `Descargando audio...\n${title}\n-1 diamante\nEspera un momento...\n\n➮ API by Edward`
+    text: `Descargando audio...\n*_${title}_*\n*-1 diamante_*\nEspera un momento...\n\n➮ API by Edward`
   }, { quoted: m })
 
   try {
     const finalTitle = await sendAudio(conn, m, videoUrl, title)
     await conn.sendMessage(m.chat, {
-      text: `Descarga completada\n\n${finalTitle || title}\nDiamantes restantes: ${restantes}\n\n➮ API by Edward`
+      text: `*_Descarga completada_*\n\n*_${finalTitle || title}_*\nDiamantes restantes: *_${restantes}_*\n\n➮ API by Edward`
     }, { quoted: m })
     await m.react('✅')
   } catch (e) {
     devolverDiamante(user, diamantes)
     console.error('[YT ERROR]', e.message)
     await m.react('❌')
-    await conn.sendMessage(m.chat, { text: `Error: ${e.message || 'Error al descargar.'}\nDiamante devuelto.` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `Error: ${e.message || 'Error al descargar.'}\n*_Diamante devuelto_*` }, { quoted: m })
   }
 }
 
@@ -188,7 +188,7 @@ handler.before = async (m, { conn }) => {
   if (!id) return false
 
   if (id === 'ytinfo') {
-    await conn.sendMessage(m.chat, { text: '➮ Escribe el nombre de la cancion:\n> .yt Naruto Opening 1' }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: '➮ Escribe el nombre de la cancion:\n> *_ .yt Naruto Opening 1_*' }, { quoted: m })
     return true
   }
 
@@ -210,9 +210,9 @@ handler.before = async (m, { conn }) => {
   return false
 }
 
-handler.help    = ['yt', 'play', 'audio']
+handler.help    = ['play']
 handler.tags    = ['downloader']
 handler.command = /^(yt|ytmp3|audio|mp3|song|play|musica|cancion)$/i
-handler.desc    = 'Descarga audio de YouTube | API by Edward'
+handler.desc    = 'Descarga audio de YouTube'
 
 export default handler
