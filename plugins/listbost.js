@@ -1,75 +1,58 @@
-import ws from 'ws'
+import fs from 'fs'
+import path from 'path'
 
-let handler = async (m, { conn }) => {
-  let uniqueUsers = new Map()
-
-  if (!global.conns || !Array.isArray(global.conns)) global.conns = []
-
-  const now = Date.now()
-
-  for (const connSub of global.conns) {
-    if (connSub.user && connSub.ws?.readyState !== ws.CLOSED) {
-      const jid = connSub.user.jid
-      const numero = jid?.split('@')[0]
-
-      let nombre = connSub.user.name
-      if (!nombre && typeof conn.getName === 'function') {
-        try {
-          nombre = await conn.getName(jid)
-        } catch {
-          nombre = `Usuario ${numero}`
-        }
+let handler = async (m, { conn, isOwner }) => {
+  if (!isOwner) return m.reply('*_Solo el owner puede usar este comando_*')
+  
+  let texto = '*_LISTA DE BOTS ACTIVOS_*\n\n'
+  
+  const mainBot = conn.user?.jid || 'Desconocido'
+  const mainName = conn.user?.name || 'Hinata-Bot'
+  texto += '➮ BOT PRINCIPAL\n'
+  texto += `✰ Nombre: *_${mainName}_*\n`
+  texto += `✰ JID: *_${mainBot}_*\n`
+  texto += `✰ Estado: *_${conn.ws?.readyState === 1 ? 'Conectado' : 'Desconectado'}_*\n\n`
+  
+  if (global.conns && global.conns.length > 0) {
+    texto += '➮ SUBHINATA\n'
+    let count = 0
+    for (const bot of global.conns) {
+      if (bot.user?.jid) {
+        count++
+        texto += `✰ SubHinata #${count}\n`
+        texto += `   Nombre: *_${bot.user?.name || 'SubHinata'}_*\n`
+        texto += `   JID: *_${bot.user?.jid}_*\n`
+        texto += `   Estado: *_${bot.ws?.readyState === 1 ? 'Conectado' : 'Desconectado'}_*\n\n`
       }
-
-      const connectedAt = connSub.connectedAt || now
-      const uptimeSub = clockString(now - connectedAt)
-
-      uniqueUsers.set(jid, {
-        nombre: nombre || `Usuario ${numero}`,
-        uptime: uptimeSub,
-        numero
-      })
     }
-  }
-
-  const uptimeTotal = clockString(process.uptime() * 1000)
-  const totalUsers = uniqueUsers.size
-
-  let txt = `╭━━━〔 🌸 SUBBOTS HINATA 🌸 〕━━⬣\n`
-  txt += `┃ 🤖 Bot activo: ${uptimeTotal}\n`
-  txt += `┃ 👥 Subbots conectados: ${totalUsers}\n`
-  txt += `╰━━━━━━━━━━━━━━━━⬣\n`
-
-  if (totalUsers > 0) {
-    txt += `\n📋 LISTA DE SUBBOTS ACTIVOS\n\n`
-
-    let i = 1
-    for (const [jid, { nombre, uptime, numero }] of uniqueUsers) {
-      txt += `┌─⊷ ${i++}\n`
-      txt += `│ 🌸 Nombre: ${nombre}\n`
-      txt += `│ ⏱️ Tiempo activo: ${uptime}\n`
-      txt += `│ 👑 wa.me/${numero}\n`
-      txt += `└──────────────⊷\n\n`
-    }
+    if (count === 0) texto += '✰ No hay SubHinata activos\n'
   } else {
-    txt += `\n❌ No hay subbots conectados actualmente.`
+    texto += '➮ SUBHINATA\n✰ No hay SubHinata activos\n'
   }
-
-  await conn.reply(m.chat, txt.trim(), m)
+  
+  const subHinataPath = path.join(process.cwd(), 'subHinata')
+  if (fs.existsSync(subHinataPath)) {
+    const dirs = fs.readdirSync(subHinataPath).filter(d => 
+      fs.statSync(path.join(subHinataPath, d)).isDirectory()
+    )
+    if (dirs.length > 0) {
+      texto += '\n➮ SUBHINATA EN ESPERA\n'
+      for (const dir of dirs) {
+        const credsPath = path.join(subHinataPath, dir, 'creds.json')
+        const tieneCreds = fs.existsSync(credsPath)
+        texto += `✰ ${dir} ${tieneCreds ? '✅' : '⏳'}\n`
+      }
+    }
+  }
+  
+  texto += '\n➮ TOTAL BOTS: *_' + (1 + (global.conns?.length || 0)) + '_*'
+  
+  await m.reply(texto)
 }
 
-handler.command = ['listjadibot', 'bots']
-handler.help = ['bots']
-handler.tags = ['serbot']
-handler.register = false
+handler.command = ['listbots', 'bots', 'subhinata']
+handler.owner = true
+handler.tags = ['owner']
+handler.help = ['listbots - Ver todos los bots activos']
 
 export default handler
-
-function clockString(ms) {
-  const d = Math.floor(ms / 86400000)
-  const h = Math.floor(ms / 3600000) % 24
-  const m = Math.floor(ms / 60000) % 60
-  const s = Math.floor(ms / 1000) % 60
-
-  return `${d}d ${h}h ${m}m ${s}s`
-}
