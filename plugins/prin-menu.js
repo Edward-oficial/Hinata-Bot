@@ -23,6 +23,7 @@ const defaultMenu = {
 
 ➮ ENLACES
 ✰ Canal: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
+
 ✰ GitHub: https://github.com/ElvigilanteDv/Hinata-bot
 
 %readmore
