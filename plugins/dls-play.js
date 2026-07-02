@@ -212,7 +212,7 @@ handler.before = async (m, { conn }) => {
 
 handler.help    = ['play']
 handler.tags    = ['downloader']
-handler.command = /^(yt|ytmp3|audio|mp3|song|play|musica|cancion)$/i
+handler.command = /^(yt3|ytmp3|audio|mp3|song|play|musica|cancion)$/i
 handler.desc    = 'Descarga audio de YouTube'
 
 export default handler
