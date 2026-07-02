@@ -93,10 +93,10 @@ async function sendVideo(conn, m, videoUrl, title) {
     await downloadFile(json.result.download_url, inputPath)
 
     const inputStats = fs.statSync(inputPath)
-    if (inputStats.size < 10000) throw new Error('El archivo descargado está vacío o corrupto.')
+    if (inputStats.size < 10000) throw new Error('El archivo descargado esta vacio o corrupto.')
 
     await conn.sendMessage(m.chat, {
-      text: `🔄 *Reparando video para WhatsApp...*\n🎬 ${finalTitle}`
+      text: `Reparando video para WhatsApp...\n*_${finalTitle}_*`
     }, { quoted: m })
 
     await repairVideoWithFFmpeg(inputPath, outputPath)
@@ -106,7 +106,7 @@ async function sendVideo(conn, m, videoUrl, title) {
 
     await conn.sendMessage(m.chat, {
       video: { url: outputPath },
-      caption: `🎬 ${finalTitle}\n📹 Calidad: ${quality}\n📦 Tamaño: ${fileSizeMB}MB`,
+      caption: `*_${finalTitle}_*\nCalidad: *_${quality}_*\nTamaño: *_${fileSizeMB}MB_*`,
       mimetype: 'video/mp4',
       fileName: finalTitle + '.mp4'
     }, { quoted: m })
@@ -139,22 +139,22 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - VIDEO', subtitle: 'Descarga video de YouTube', hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🎬 「 HINATA VIDEO 」 🎬\n\n💫 » Descarga video de YouTube\n📹 » Calidad original\n\n> ${usedPrefix}${command} <nombre o link>\n> Ejemplo: ${usedPrefix}${command} Naruto Opening 1\n> 💎 Cuesta 1 diamante por descarga` },
-      footer: { text: '⫏⫏ HINATA BOT ✿' },
-      nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎬 VIDEO', sections: [{ title: '¿Qué deseas hacer?', rows: [{ header: '🔍 BUSCAR', title: 'Buscar video', description: 'Escribe el nombre después del comando', id: 'ytinfo' }] }] }) }] }
+      body: { text: `*_VIDEO_*\n\nBusca y descarga video de YouTube\nCalidad original\n\nUso: *_${usedPrefix}${command} <nombre o link>_*\nEjemplo: *_${usedPrefix}${command} Naruto Opening 1_*\n\n*_Cuesta 1 diamante por descarga_*\n\n➮ API by Edward` },
+      footer: { text: 'HINATA BOT' },
+      nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'VIDEO', sections: [{ title: 'Que deseas hacer', rows: [{ header: 'BUSCAR', title: 'Buscar video', description: 'Escribe el nombre despues del comando', id: 'ytinfo' }] }] }) }] }
     })
     const msg = generateWAMessageFromContent(m.chat, { viewOnceMessage: { message: { messageContextInfo: {}, interactiveMessage } } }, { quoted: m })
     return conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
   }
 
   if (isHttpUrl(input) && !extractYouTubeUrl(input)) {
-    return conn.sendMessage(m.chat, { text: '❌ Envía un link válido de YouTube.' }, { quoted: m })
+    return conn.sendMessage(m.chat, { text: 'Envia un link valido de YouTube.' }, { quoted: m })
   }
 
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     return conn.sendMessage(m.chat, {
-      text: `🎬 「 HINATA VIDEO 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar`
+      text: `*_VIDEO_*\n\nNo tienes suficientes diamantes\nNecesitas: *_1_* | Tienes: *_${diamantes}_*\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
     }, { quoted: m })
   }
 
@@ -180,22 +180,22 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const rows = resultados.map((v, i) => ({
       header: String(v.author || 'Desconocido').slice(0, 20),
       title: String(v.title || '').slice(0, 35),
-      description: `⏱️ ${v.duration || '?'} | 👁️ ${v.views || '?'}`,
+      description: `Duracion: ${v.duration || '?'} | Vistas: ${v.views || '?'}`,
       id: `ytsel~${Buffer.from(v.url).toString('base64')}~${Buffer.from(String(v.title || 'video')).toString('base64')}`
     }))
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - VIDEO', subtitle: `Resultados: ${input}`, hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🔍 「 RESULTADOS 」\n\n💫 » Búsqueda: *${input}*\n📋 ${resultados.length} resultados encontrados\n\n> Elige el que quieras descargar\n> 💎 1 diamante\n📹 Calidad original` },
-      footer: { text: '⫏⫏ HINATA BOT ✿' },
-      nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎬 RESULTADOS', sections: [{ title: `📋 ${input.toUpperCase().slice(0, 24)}`, rows }] }) }] }
+      body: { text: `*_RESULTADOS_*\n\nBusqueda: *_${input}_*\n*_${resultados.length}_* resultados encontrados\n\nElige el que quieras descargar\n*_Cuesta 1 diamante_*\nCalidad original\n\n➮ API by Edward` },
+      footer: { text: 'HINATA BOT' },
+      nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: 'RESULTADOS', sections: [{ title: input.toUpperCase().slice(0, 24), rows }] }) }] }
     })
     const msg = generateWAMessageFromContent(m.chat, { viewOnceMessage: { message: { messageContextInfo: {}, interactiveMessage } } }, { quoted: m })
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
     await m.react('✅')
   } catch (e) {
     await m.react('❌')
-    conn.sendMessage(m.chat, { text: `❌ ${e.message}` }, { quoted: m })
+    conn.sendMessage(m.chat, { text: `Error: ${e.message}` }, { quoted: m })
   }
 }
 
@@ -206,7 +206,7 @@ async function _descargarVideo(conn, m, videoUrl, title) {
   const diamantes = getDiamantes(user)
   if (diamantes < 1) {
     await conn.sendMessage(m.chat, {
-      text: `🎬 「 HINATA VIDEO 」\n\n💫 » No tienes suficientes diamantes\n💎 Necesitas: 1 | Tienes: ${diamantes}\n\n> Usa #work para ganar`
+      text: `*_VIDEO_*\n\nNo tienes suficientes diamantes\nNecesitas: *_1_* | Tienes: *_${diamantes}_*\n\n➮ Usa work para ganar diamantes\n\n➮ API by Edward`
     }, { quoted: m })
     return
   }
@@ -216,20 +216,20 @@ async function _descargarVideo(conn, m, videoUrl, title) {
 
   await m.react('⏳')
   await conn.sendMessage(m.chat, {
-    text: `🎬 *Descargando video...*\n🎧 ${title}\n💎 -1 diamante\n⏳ Espera un momento...`
+    text: `Descargando video...\n*_${title}_*\n*-1 diamante_*\nEspera un momento...\n\n➮ API by Edward`
   }, { quoted: m })
 
   try {
     const finalTitle = await sendVideo(conn, m, videoUrl, title)
     await conn.sendMessage(m.chat, {
-      text: `✅ *Descarga completada*\n\n🎬 » ${finalTitle || title}\n💎 » Diamantes restantes: ${restantes}`
+      text: `*_Descarga completada_*\n\n*_${finalTitle || title}_*\nDiamantes restantes: *_${restantes}_*\n\n➮ API by Edward`
     }, { quoted: m })
     await m.react('✅')
   } catch (e) {
     devolverDiamante(user, diamantes)
     console.error('[YT VIDEO ERROR]', e.message)
     await m.react('❌')
-    await conn.sendMessage(m.chat, { text: `❌ ${e.message || 'Error al descargar.'}\n💎 Diamante devuelto.` }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: `Error: ${e.message || 'Error al descargar.'}\n*_Diamante devuelto_*` }, { quoted: m })
   }
 }
 
@@ -253,7 +253,7 @@ handler.before = async (m, { conn }) => {
   if (!id) return false
 
   if (id === 'ytinfo') {
-    await conn.sendMessage(m.chat, { text: '🔍 Escribe el nombre así:\n> .video Naruto Opening 1' }, { quoted: m })
+    await conn.sendMessage(m.chat, { text: '➮ Escribe el nombre del video:\n> *_ .video Naruto Opening 1_*' }, { quoted: m })
     return true
   }
 
@@ -275,9 +275,9 @@ handler.before = async (m, { conn }) => {
   return false
 }
 
-handler.help    = ['video', 'mp4']
+handler.help    = ['video']
 handler.tags    = ['downloader']
 handler.command = /^(video|mp4|ytvideo)$/i
-handler.desc    = 'Descarga video de YouTube 💎1'
+handler.desc    = 'Descarga video de YouTube'
 
 export default handler
