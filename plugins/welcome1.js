@@ -45,7 +45,23 @@ const handler = async (m, { conn, command, args, isAdmin }) => {
   const validTypes = ['antilink', 'welcome', 'antiarabe', 'modoadmin']
   if (!validTypes.includes(type)) {
     return m.reply(
-      `*_🟢 ON:_*\n\n_.on antilink_\n_.on welcome_\n_.on antiarabe_\n_.on modoadmin_\n\n\n*_🔴 OFF:_*\n\n_.off antilink_\n_.off welcome_\n_.off antiarabe_\n_.off modoadmin_`
+`*_Hinata-Bot_*
+
+➮ ON
+✰ .on antilink
+✰ .on welcome
+✰ .on antiarabe
+✰ .on modoadmin
+
+➮ OFF
+✰ .off antilink
+✰ .off welcome
+✰ .off antiarabe
+✰ .off modoadmin
+
+➮ CREADORES
+✰ Edward
+✰ BrayanRK`
     )
   }
 
@@ -54,7 +70,7 @@ const handler = async (m, { conn, command, args, isAdmin }) => {
   settings[botNumber][m.chat][type] = enable
   saveSettings(settings)
 
-  return m.reply(`✅ ${type} ${enable ? 'activado' : 'desactivado'}.`)
+  return m.reply(`${type} ${enable ? 'activado' : 'desactivado'}.`)
 }
 
 handler.command = ['on', 'off']
@@ -70,28 +86,28 @@ handler.before = async (m, { conn }) => {
   const settings = getChatConfig(botNumber, m.chat)
   const chat = settings[botNumber][m.chat]
 
-  // 🔒 MODO ADMIN
+  // MODO ADMIN
   if (chat.modoadmin) {
     const groupMetadata = await conn.groupMetadata(m.chat)
     const isUserAdmin = groupMetadata.participants.find(p => p.id === m.sender)?.admin
     if (!isUserAdmin && !m.fromMe) return
   }
 
-  // 🚫 ANTIARABE
+  // ANTIARABE
   if (chat.antiarabe && m.messageStubType === 27) {
     const newJid = m.messageStubParameters?.[0]
     if (newJid) {
       const number = newJid.split('@')[0]
       const arabicPrefixes = ['212', '20', '971', '965', '966', '974', '973', '962']
       if (arabicPrefixes.some(prefix => number.startsWith(prefix))) {
-        await conn.sendMessage(m.chat, { text: `Este usuario ${newJid} será expulsado. [ Anti Arabe Activado ]` })
+        await conn.sendMessage(m.chat, { text: `Este usuario ${newJid} sera expulsado. [ Anti Arabe Activado ]` })
         await conn.groupParticipantsUpdate(m.chat, [newJid], 'remove')
         return true
       }
     }
   }
 
-  // 🔗 ANTILINK
+  // ANTILINK
   const linkRegex = /chat\.whatsapp\.com\/[0-9A-Za-z]{20,24}/i
   const linkRegex1 = /whatsapp\.com\/channel\/[0-9A-Za-z]{20,24}/i
   if (chat.antilink) {
@@ -107,73 +123,77 @@ handler.before = async (m, { conn }) => {
         if (text.includes(ownGroupLink)) return
       } catch {}
 
-      await conn.sendMessage(m.chat, { text: `🚫 Hey ${userTag}, no se permiten links aquí.`, mentions: [m.sender] }, { quoted: m })
+      await conn.sendMessage(m.chat, { text: `No se permiten links aqui. ${userTag}`, mentions: [m.sender] }, { quoted: m })
       await conn.groupParticipantsUpdate(m.chat, [m.sender], 'remove')
       return true
     }
   }
 
-//welcome
-if (chat.welcome && [27, 28, 32].includes(m.messageStubType)) {
-  const groupMetadata = await conn.groupMetadata(m.chat)
-  const groupSize = groupMetadata.participants.length
-  const userId = m.messageStubParameters?.[0] || m.sender
-  const userMention = '@' + userId.split('@')[0]
-  let profilePic
-  try {
-    profilePic = await conn.profilePictureUrl(m.chat, 'image')
-  } catch {
-    profilePic = 'https://files.catbox.moe/r60c8l.jpg'
-  }
-
-  if (m.messageStubType === 27) {
-    let texto
-    if (chat.sWelcome) {
-      texto = chat.sWelcome
-        .replace(/@user/g, userMention)
-        .replace(/@group/g, groupMetadata.subject)
-        .replace(/@members/g, groupSize)
-    } else {
-      texto = '⛩️ 「 HINATA BOT 」 ⛩️\n\n'
-      texto += '桜 » *BIENVENID@*\n'
-      texto += '風 » ' + userMention + '\n'
-      texto += '花 » ' + groupMetadata.subject + '\n'
-      texto += '桜 » Miembros: ' + groupSize + '\n\n'
-      texto += '✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧\n\n'
-      texto += '> Gracias por unirte ♡'
+  // WELCOME
+  if (chat.welcome && [27, 28, 32].includes(m.messageStubType)) {
+    const groupMetadata = await conn.groupMetadata(m.chat)
+    const groupSize = groupMetadata.participants.length
+    const userId = m.messageStubParameters?.[0] || m.sender
+    const userMention = '@' + userId.split('@')[0]
+    let profilePic
+    try {
+      profilePic = await conn.profilePictureUrl(m.chat, 'image')
+    } catch {
+      profilePic = 'https://files.catbox.moe/r60c8l.jpg'
     }
 
-    await conn.sendMessage(m.chat, {
-      image: { url: profilePic },
-      caption: texto,
-      mentions: [userId]
-    })
-  }
+    if (m.messageStubType === 27) {
+      let texto
+      if (chat.sWelcome) {
+        texto = chat.sWelcome
+          .replace(/@user/g, userMention)
+          .replace(/@group/g, groupMetadata.subject)
+          .replace(/@members/g, groupSize)
+      } else {
+        texto = '*_Hinata-Bot_*\n\n'
+        texto += '➮ BIENVENID@\n'
+        texto += '✰ ' + userMention + '\n'
+        texto += '✰ ' + groupMetadata.subject + '\n'
+        texto += '✰ Miembros: ' + groupSize + '\n\n'
+        texto += '> Gracias por unirte\n\n'
+        texto += '➮ CREADORES\n'
+        texto += '✰ Edward\n'
+        texto += '✰ BrayanRK'
+      }
 
-  if ([28, 32].includes(m.messageStubType)) {
-    let texto
-    if (chat.sBye) {
-      texto = chat.sBye
-        .replace(/@user/g, userMention)
-        .replace(/@group/g, groupMetadata.subject)
-        .replace(/@members/g, groupSize)
-    } else {
-      texto = '⛩️ 「 HINATA BOT 」 ⛩️\n\n'
-      texto += '桜 » *ADIOS*\n'
-      texto += '風 » ' + userMention + '\n'
-      texto += '花 » ' + groupMetadata.subject + '\n'
-      texto += '桜 » Miembros: ' + groupSize + '\n\n'
-      texto += '✧･ﾟ: *✧･ﾟ:* *:･ﾟ✧*:･ﾟ✧'
+      await conn.sendMessage(m.chat, {
+        image: { url: profilePic },
+        caption: texto,
+        mentions: [userId]
+      })
     }
 
-    await conn.sendMessage(m.chat, {
-      image: { url: profilePic },
-      caption: texto,
-      mentions: [userId]
-    })
-  }
-}
+    if ([28, 32].includes(m.messageStubType)) {
+      let texto
+      if (chat.sBye) {
+        texto = chat.sBye
+          .replace(/@user/g, userMention)
+          .replace(/@group/g, groupMetadata.subject)
+          .replace(/@members/g, groupSize)
+      } else {
+        texto = '*_Hinata-Bot_*\n\n'
+        texto += '➮ ADIOS\n'
+        texto += '✰ ' + userMention + '\n'
+        texto += '✰ ' + groupMetadata.subject + '\n'
+        texto += '✰ Miembros: ' + groupSize + '\n\n'
+        texto += '> Esperamos verte de vuelta\n\n'
+        texto += '➮ CREADORES\n'
+        texto += '✰ Edward\n'
+        texto += '✰ BrayanRK'
+      }
 
+      await conn.sendMessage(m.chat, {
+        image: { url: profilePic },
+        caption: texto,
+        mentions: [userId]
+      })
+    }
+  }
 }
 
 export default handler
