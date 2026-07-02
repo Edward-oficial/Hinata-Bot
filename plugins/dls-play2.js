@@ -4,7 +4,12 @@ import {
   prepareWAMessageMedia,
   proto
 } from '@whiskeysockets/baileys'
+import ffmpeg from 'fluent-ffmpeg'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const EDWARD_API = 'https://dv-edward-api.onrender.com/api'
 const EDWARD_KEY = 'edward'
 
@@ -29,6 +34,26 @@ function devolverDiamante(user, anterior) {
   else user.diamond = anterior
 }
 
+async function downloadFile(url, outputPath) {
+  const res = await fetch(url)
+  const buffer = await res.arrayBuffer()
+  fs.writeFileSync(outputPath, Buffer.from(buffer))
+}
+
+async function repairVideoWithFFmpeg(inputPath, outputPath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .outputOptions([
+        '-c copy',
+        '-movflags +faststart',
+        '-fflags +genpts'
+      ])
+      .on('end', () => resolve())
+      .on('error', (err) => reject(err))
+      .save(outputPath)
+  })
+}
+
 async function sendVideo(conn, m, videoUrl, title) {
   const res = await fetch(`${EDWARD_API}/download/ytvideo?url=${encodeURIComponent(videoUrl)}&apiKey=${EDWARD_KEY}`)
   const json = await res.json()
@@ -37,15 +62,40 @@ async function sendVideo(conn, m, videoUrl, title) {
   
   const finalTitle = safeFileName(json.result.title || title)
   const quality = json.result.quality || '360p'
-
-  await conn.sendMessage(m.chat, {
-    video: { url: json.result.download_url },
-    caption: `🎬 ${finalTitle}\n📹 Calidad: ${quality}`,
-    mimetype: 'video/mp4',
-    fileName: finalTitle + '.mp4'
-  }, { quoted: m })
-
-  return finalTitle
+  const tempDir = path.join(__dirname, 'temp')
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir)
+  
+  const inputPath = path.join(tempDir, `${Date.now()}_input.mp4`)
+  const outputPath = path.join(tempDir, `${Date.now()}_output.mp4`)
+  
+  try {
+    await downloadFile(json.result.download_url, inputPath)
+    
+    await conn.sendMessage(m.chat, {
+      text: `🔄 *Reparando video para WhatsApp...*\n🎬 ${finalTitle}`
+    }, { quoted: m })
+    
+    await repairVideoWithFFmpeg(inputPath, outputPath)
+    
+    const stats = fs.statSync(outputPath)
+    const fileSizeMB = (stats.size / (1024 * 1024)).toFixed(2)
+    
+    await conn.sendMessage(m.chat, {
+      video: { url: outputPath },
+      caption: `🎬 ${finalTitle}\n📹 Calidad: ${quality}\n📦 Tamaño: ${fileSizeMB}MB`,
+      mimetype: 'video/mp4',
+      fileName: finalTitle + '.mp4'
+    }, { quoted: m })
+    
+    fs.unlinkSync(inputPath)
+    fs.unlinkSync(outputPath)
+    
+    return finalTitle
+  } catch (error) {
+    if (fs.existsSync(inputPath)) fs.unlinkSync(inputPath)
+    if (fs.existsSync(outputPath)) fs.unlinkSync(outputPath)
+    throw error
+  }
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
@@ -65,7 +115,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - VIDEO', subtitle: 'Descarga video de YouTube', hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🎬 「 HINATA VIDEO 」 🎬\n\n💫 » Descarga video de YouTube\n\n> ${usedPrefix}${command} <nombre o link>\n> Ejemplo: ${usedPrefix}${command} Naruto Opening 1\n> 💎 Cuesta 1 diamante por descarga` },
+      body: { text: `🎬 「 HINATA VIDEO 」 🎬\n\n💫 » Descarga video de YouTube\n📹 » Calidad original\n\n> ${usedPrefix}${command} <nombre o link>\n> Ejemplo: ${usedPrefix}${command} Naruto Opening 1\n> 💎 Cuesta 1 diamante por descarga` },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎬 VIDEO', sections: [{ title: '¿Qué deseas hacer?', rows: [{ header: '🔍 BUSCAR', title: 'Buscar video', description: 'Escribe el nombre después del comando', id: 'ytinfo' }] }] }) }] }
     })
@@ -112,7 +162,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
     const interactiveMessage = proto.Message.InteractiveMessage.create({
       header: { title: 'HINATA BOT - VIDEO', subtitle: `Resultados: ${input}`, hasMediaAttachment: !!media, imageMessage: media?.imageMessage },
-      body: { text: `🔍 「 RESULTADOS 」\n\n💫 » Búsqueda: *${input}*\n📋 ${resultados.length} resultados encontrados\n\n> Elige el que quieras descargar\n> 💎 1 diamante` },
+      body: { text: `🔍 「 RESULTADOS 」\n\n💫 » Búsqueda: *${input}*\n📋 ${resultados.length} resultados encontrados\n\n> Elige el que quieras descargar\n> 💎 1 diamante\n📹 Calidad original` },
       footer: { text: '⫏⫏ HINATA BOT ✿' },
       nativeFlowMessage: { buttons: [{ name: 'single_select', buttonParamsJson: JSON.stringify({ title: '🎬 RESULTADOS', sections: [{ title: `📋 ${input.toUpperCase().slice(0, 24)}`, rows }] }) }] }
     })
