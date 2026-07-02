@@ -50,9 +50,9 @@ let handler = async (m, { conn, isOwner }) => {
   await m.reply(texto)
 }
 
-handler.command = ['listbots', 'bots', 'subhinata']
-handler.owner = true
+handler.help = ['listbots']
 handler.tags = ['owner']
-handler.help = ['listbots - Ver todos los bots activos']
+handler.command = /^(listbots|bots|subhinata)$/i
+handler.desc = 'Muestra la lista de bots activos'
 
 export default handler
