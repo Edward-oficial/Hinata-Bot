@@ -4,7 +4,7 @@ const handler = async (m, { conn }) => {
   let who = m.sender
 
   let textoEspera = '*_Hinata-Bot_*\n\n'
-  textoEspera += '➮ ACTUALIZANDO\n'
+  textoEspera += '➮ *_ACTUALIZANDO_*\n'
   textoEspera += '✰ Buscando actualizaciones...\n'
   textoEspera += '✰ Espera un momento...'
 
@@ -31,9 +31,9 @@ const handler = async (m, { conn }) => {
       }
 
       let textoError = '*_Hinata-Bot_*\n\n'
-      textoError += '➮ ERROR\n'
-      textoError += '✰ ' + motivo + '\n'
-      textoError += '✰ Solucion: ' + solucion
+      textoError += '➮ *_ERROR_*\n'
+      textoError += '✰ *_Motivo_*: ' + motivo + '\n'
+      textoError += '✰ *_Solucion_*: ' + solucion
 
       await conn.sendMessage(m.chat, { text: textoError }, { quoted: m })
       return
@@ -41,10 +41,10 @@ const handler = async (m, { conn }) => {
 
     if (stdout.includes('Already up to date')) {
       let textoAlDia = '*_Hinata-Bot_*\n\n'
-      textoAlDia += '➮ ESTADO\n'
+      textoAlDia += '➮ *_ESTADO_*\n'
       textoAlDia += '✰ Hinata ya esta en su mejor version\n'
       textoAlDia += '✰ No hay actualizaciones pendientes\n\n'
-      textoAlDia += '➮ SOLICITADO POR\n'
+      textoAlDia += '➮ *_SOLICITADO POR_*\n'
       textoAlDia += '✰ @' + who.split('@')[0]
 
       await conn.sendMessage(m.chat, {
@@ -63,11 +63,11 @@ const handler = async (m, { conn }) => {
 
     let texto = '*_Hinata-Bot Actualizada_*\n\n'
 
-    texto += '➮ RESUMEN\n'
+    texto += '➮ *_RESUMEN_*\n'
     texto += '✰ Hinata se ha renovado\n\n'
 
     if (filesCreados.length > 0) {
-      texto += '➮ NUEVOS ARCHIVOS\n'
+      texto += '➮ *_NUEVOS ARCHIVOS_*\n'
       for (let file of filesCreados.slice(0, 15)) {
         texto += '✰ ' + file + '\n'
       }
@@ -79,12 +79,12 @@ const handler = async (m, { conn }) => {
 
     let changedMatch = stdout.match(/(\d+) files? changed/)
     if (changedMatch) {
-      texto += '➮ ARCHIVOS MODIFICADOS\n'
+      texto += '➮ *_ARCHIVOS MODIFICADOS_*\n'
       texto += '✰ ' + changedMatch[1] + ' archivo(s)\n\n'
     }
 
     if (filesEliminados.length > 0) {
-      texto += '➮ ARCHIVOS ELIMINADOS\n'
+      texto += '➮ *_ARCHIVOS ELIMINADOS_*\n'
       for (let file of filesEliminados.slice(0, 15)) {
         texto += '✰ ' + file + '\n'
       }
@@ -97,12 +97,12 @@ const handler = async (m, { conn }) => {
     let summary = stdout.match(/\d+ files? changed, \d+ insertions?\(\+\), \d+ deletions?\(-\)/)
     if (summary) {
       let nums = summary[0].match(/\d+/g)
-      texto += '➮ CAMBIOS DE CODIGO\n'
+      texto += '➮ *_CAMBIOS DE CODIGO_*\n'
       texto += '✰ +' + nums[1] + ' linea(s) agregada(s)\n'
       texto += '✰ -' + nums[2] + ' linea(s) eliminada(s)\n\n'
     }
 
-    texto += '➮ SOLICITADO POR\n'
+    texto += '➮ *_SOLICITADO POR_*\n'
     texto += '✰ @' + who.split('@')[0]
 
     await conn.sendMessage(m.chat, {
@@ -121,7 +121,7 @@ const handler = async (m, { conn }) => {
 handler.help = ['update', 'fix']
 handler.tags = ['owner']
 handler.command = /^(update|actualizar|fix|fixpull)$/i
-handler.desc = 'Actualiza o repara Hinata'
+handler.desc = 'Actualiza Hinata'
 handler.owner = true
 
 export default handler
