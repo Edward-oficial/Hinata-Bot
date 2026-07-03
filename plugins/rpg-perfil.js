@@ -45,45 +45,51 @@ let handler = async (m, { conn }) => {
 
   let totalNeto = (user.diamantes || 0) + (user.bank || 0)
 
-  let texto = '࿇ ══━━━✥◈✥━━━══ ࿇\n'
-  texto += '   𝕳𝖎𝖓𝖆𝖙𝖆 𝖕𝖊𝖗𝖋𝖎𝖑\n'
-  texto += '࿇ ══━━━✥◈✥━━━══ ࿇\n\n'
+  let texto = '*_Hinata-Bot_*\n\n'
+  
+  texto += '➮ *_PERFIL_*\n'
+  texto += '✰ *_Nombre_*: ' + name + '\n'
+  texto += '✰ *_Clase_*: ' + user.class + '\n'
+  texto += '✰ *_Nivel_*: ' + user.level + '\n\n'
 
-  texto += '𖣔 ɢᴇɴᴇʀᴀʟ ˚ʚ♡ɞ˚\n'
-  texto += '❧ Nombre\n> ' + name + '\n'
-  texto += '❧ Clase\n> ' + user.class + '\n'
-  texto += '❧ Nivel\n> ' + user.level + '\n\n'
+  texto += '➮ *_EXPERIENCIA_*\n'
+  texto += '✰ ' + barraExp + '\n'
+  texto += '✰ ' + user.exp + ' / ' + expSiguiente + ' (' + porcentajeExp + '%)\n\n'
 
-  texto += '𖣔 ᴇxᴘᴇʀɪᴇɴᴄɪᴀ ˚ʚ♡ɞ˚\n'
-  texto += '❧ ' + barraExp + '\n'
-  texto += '> ' + user.exp + ' / ' + expSiguiente + ' (' + porcentajeExp + '%)\n\n'
+  texto += '➮ *_COMBATE_*\n'
+  texto += '✰ *_Vida_*\n' + barraVida + '\n'
+  texto += '✰ ' + user.health + ' / ' + user.maxHealth + '\n'
+  texto += '✰ *_Mana_*\n' + barraMana + '\n'
+  texto += '✰ ' + user.mana + ' / ' + user.maxMana + '\n'
+  texto += '✰ *_Ataque_*: ' + user.attack + '\n'
+  texto += '✰ *_Defensa_*: ' + user.defense + '\n\n'
 
-  texto += '𖣔 ᴄᴏᴍʙᴀᴛᴇ ˚ʚ♡ɞ˚\n'
-  texto += '❧ Vida\n' + barraVida + '\n'
-  texto += '> ' + user.health + ' / ' + user.maxHealth + '\n'
-  texto += '❧ Mana\n' + barraMana + '\n'
-  texto += '> ' + user.mana + ' / ' + user.maxMana + '\n'
-  texto += '❧ Ataque\n> ' + user.attack + '\n'
-  texto += '❧ Defensa\n> ' + user.defense + '\n\n'
+  texto += '➮ *_ECONOMIA_*\n'
+  texto += '✰ *_Diamantes_*: ' + user.diamantes + '\n'
+  texto += '✰ *_Banco_*: ' + user.bank + '\n'
+  texto += '✰ *_Total neto_*: ' + totalNeto + '\n\n'
 
-  texto += '𖣔 ᴇᴄᴏɴᴏᴍíᴀ ˚ʚ♡ɞ˚\n'
-  texto += '❧ Diamantes\n> ' + user.diamantes + ' 💎\n'
-  texto += '❧ Banco\n> ' + user.bank + ' 💎\n'
-  texto += '❧ Total neto\n> ' + totalNeto + ' 💎\n\n'
-
-  texto += '𖣔 ᴇQᴜɪᴘᴀᴍɪᴇɴᴛᴏ ˚ʚ♡ɞ˚\n'
-  texto += '❧ Inventario\n> ' + (user.inventory?.length || 0) + ' items\n'
-  texto += '❧ Arma\n> ' + (user.equipment?.weapon || 'Ninguna') + '\n'
-  texto += '❧ Armadura\n> ' + (user.equipment?.armor || 'Ninguna') + '\n'
-  texto += '❧ Accesorio\n> ' + (user.equipment?.accessory || 'Ninguno') + '\n\n'
-
-  texto += '࿇ ══━━━✥◈✥━━━══ ࿇'
+  texto += '➮ *_EQUIPAMIENTO_*\n'
+  texto += '✰ *_Inventario_*: ' + (user.inventory?.length || 0) + ' items\n'
+  texto += '✰ *_Arma_*: ' + (user.equipment?.weapon || 'Ninguna') + '\n'
+  texto += '✰ *_Armadura_*: ' + (user.equipment?.armor || 'Ninguna') + '\n'
+  texto += '✰ *_Accesorio_*: ' + (user.equipment?.accessory || 'Ninguno') + '\n'
 
   await conn.sendMessage(m.chat, {
     image: { url: pp },
     caption: texto,
-    mentions: [who]
-  }, { quoted: m })
+    mentions: [who],
+    contextInfo: {
+      mentionedJid: [who],
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: '120363407253203904@newsletter',
+        newsletterName: '𓆩⚝𓆪 ʜɪɴᴀᴛᴀ ᴏꜰɪᴄɪᴀʟ 𓆩⚝𓆪',
+        serverMessageId: 1
+      }
+    }
+  })
 }
 
 handler.help = ['perfil']
