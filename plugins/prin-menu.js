@@ -14,28 +14,28 @@ const defaultMenu = {
   before: `
 *_Hinata-Bot_*
 
-➮ INFORMACION
+➮ *_INFORMACION_*
 ✰ *_Usuario_*: %name
 ✰ *_Experiencia_*: %exp / %maxexp
 ✰ *_Modo_*: %mode
 ✰ *_Activo_*: %muptime
 ✰ *_Registrados_*: %totalreg
 
-➮ ENLACES
+➮ *_ENLACES_*
 ✰ *_Canal_*: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
 
 ✰ *_GitHub_*: https://github.com/ElvigilanteDv/Hinata-bot
 
 %readmore
 `.trim(),
-  header: '\n➮ %category',
+  header: '\n➮ *_%category_*',
   body: '✰ %cmd',
   footer: '',
   after: `
 
 *_Hinata-Bot_*
 
-➮ CREADORES
+➮ *_CREADORES_*
 ✰ *_Edward_*
 ✰ *_BrayanRK_*`
 }
