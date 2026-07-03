@@ -19,6 +19,7 @@ export default function setupEvents(conn) {
     }
   }
 
+  // Cambios en el grupo (nombre, descripcion, foto)
   conn.ev.on('groups.update', async (updates) => {
     for (const update of updates) {
       const groupId = update.id
@@ -59,6 +60,7 @@ export default function setupEvents(conn) {
     }
   })
 
+  // Promover o degradar admin
   conn.ev.on('group-participants.update', async (update) => {
     const { id, participants, action, author } = update
     
@@ -82,6 +84,33 @@ export default function setupEvents(conn) {
           ))
         } catch (e) {
           console.error('Error al notificar degradacion:', e)
+        }
+      }
+    }
+  })
+
+  // Link restablecido (cuando se genera un nuevo link de invitacion)
+  conn.ev.on('group.update', async (update) => {
+    if (update.announce && update.announce === 'not_announcement') {
+      // Cuando se abre el grupo
+    }
+  })
+
+  // Detectar cuando se genera un nuevo link de invitacion
+  conn.ev.on('groups.update', async (updates) => {
+    for (const update of updates) {
+      if (update.inviteCode) {
+        const groupId = update.id
+        const author = update.author || 'Alguien'
+        const newLink = `https://chat.whatsapp.com/${update.inviteCode}`
+        
+        try {
+          await conn.sendMessage(groupId, createNewsletterContext(
+            `*_Hinata-Bot_*\n\n➮ *_LINK RESTABLECIDO_*\n✰ Se ha restablecido el link de invitacion\n✰ Nuevo link: ${newLink}\n✰ Generado por: @${author.split('@')[0]}`,
+            [author]
+          ))
+        } catch (e) {
+          console.error('Error al notificar link restablecido:', e)
         }
       }
     }
