@@ -15,16 +15,15 @@ const defaultMenu = {
 *_Hinata-Bot_*
 
 ➮ INFORMACION
-✰ Usuario: %name
-✰ Experiencia: %exp / %maxexp
-✰ Modo: %mode
-✰ Activo: %muptime
-✰ Registrados: %totalreg
+✰ *_Usuario_*: %name
+✰ *_Experiencia_*: %exp / %maxexp
+✰ *_Modo_*: %mode
+✰ *_Activo_*: %muptime
+✰ *_Registrados_*: %totalreg
 
 ➮ ENLACES
-✰ Canal: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
-
-✰ GitHub: https://github.com/ElvigilanteDv/Hinata-bot
+✰ *_Canal_*: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
+✰ *_GitHub_*: https://github.com/ElvigilanteDv/Hinata-bot
 
 %readmore
 `.trim(),
@@ -36,8 +35,8 @@ const defaultMenu = {
 *_Hinata-Bot_*
 
 ➮ CREADORES
-✰ Edward
-✰ BrayanRK`
+✰ *_Edward_*
+✰ *_BrayanRK_*`
 }
 
 const menuDir = './media/menu'
@@ -98,7 +97,7 @@ let handler = async (m, { conn, usedPrefix }) => {
         .filter(p => p.tags.includes(tag))
         .flatMap(p => p.help.map(c =>
           menu.body.replace('%cmd', p.prefix ? c : usedPrefix + c) +
-          (p.desc ? `\n> ${p.desc}` : '')
+          (p.desc ? `\n> *_${p.desc}_*` : '')
         )).join('\n')
       return cmds ? `${menu.header.replace('%category', tags[tag])}\n${cmds}\n${menu.footer}` : ''
     }).filter(Boolean),
