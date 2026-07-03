@@ -1,10 +1,10 @@
 let handler = async (m, { conn, isAdmin, isBotAdmin }) => {
-  if (!m.isGroup) return conn.sendMessage(m.chat, { text: '👥 「 HINATA CLOSE 」 👥\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔\n\n❥ Solo para grupos\n\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔' }, { quoted: m })
-  if (!isAdmin) return conn.sendMessage(m.chat, { text: '👥 「 HINATA CLOSE 」 👥\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔\n\n❥ Solo administradores\n\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔' }, { quoted: m })
-  if (!isBotAdmin) return conn.sendMessage(m.chat, { text: '👥 「 HINATA CLOSE 」 👥\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔\n\n❥ La bot necesita ser admin\n\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔' }, { quoted: m })
+  if (!m.isGroup) return conn.sendMessage(m.chat, { text: '*_Hinata-Bot_*\n\n➮ *_SOLO GRUPOS_*\n✰ Este comando solo funciona en grupos' }, { quoted: m })
+  if (!isAdmin) return conn.sendMessage(m.chat, { text: '*_Hinata-Bot_*\n\n➮ *_SOLO ADMINS_*\n✰ Solo administradores pueden usar este comando' }, { quoted: m })
+  if (!isBotAdmin) return conn.sendMessage(m.chat, { text: '*_Hinata-Bot_*\n\n➮ *_NECESITO SER ADMIN_*\n✰ La bot necesita ser administradora' }, { quoted: m })
 
   await conn.groupSettingUpdate(m.chat, 'announcement')
-  await conn.sendMessage(m.chat, { text: '👥 「 HINATA CLOSE 」 👥\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔\n\n🔒 » Grupo cerrado\n🔇 » Solo admins hablan\n\n▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔▔' }, { quoted: m })
+  await conn.sendMessage(m.chat, { text: '*_Hinata-Bot_*\n\n➮ *_GRUPO CERRADO_*\n✰ Grupo cerrado exitosamente\n✰ Solo administradores pueden enviar mensajes' }, { quoted: m })
 }
 
 handler.help = ['close']
