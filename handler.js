@@ -13,6 +13,27 @@ clearTimeout(this)
 resolve()
 }, ms))
 
+const newsletterConfig = {
+  jid: '120363407253203904@newsletter',
+  name: '𓆩⚝𓆪 ʜɪɴᴀᴛᴀ ᴏꜰɪᴄɪᴀʟ 𓆩⚝𓆪'
+}
+
+function addNewsletterContext(text, mentionedJid = []) {
+  return {
+    text: text,
+    contextInfo: {
+      mentionedJid: mentionedJid,
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: newsletterConfig.jid,
+        newsletterName: newsletterConfig.name,
+        serverMessageId: 1
+      }
+    }
+  }
+}
+
 export async function handler(chatUpdate) {
 this.msgqueque = this.msgqueque || []
 this.uptime = this.uptime || Date.now()
@@ -369,7 +390,7 @@ let user = global.db.data.users[m.sender]
 if (!['grupo-unbanchat.js'].includes(name) && chat && chat.isBanned && !isROwner) return
 if (name != 'grupo-unbanchat.js' && name != 'owner-exec.js' && name != 'owner-exec2.js' && name != 'grupo-delete.js' && chat?.isBanned && !isROwner) return
 if (m.text && user.banned && !isROwner) {
-m.reply(`《✦》Estas baneado/a, no puedes usar comandos en este bot!\n\n${user.bannedReason ? `✰ *Motivo:* ${user.bannedReason}` : '✰ *Motivo:* Sin Especificar'}\n\n> ✧ Si este Bot es cuenta oficial y tiene evidencia que respalde que este mensaje es un error, puedes exponer tu caso con un moderador.`)
+m.reply(`*_Hinata-Bot_*\n\n➮ *_BANEADO_*\n✰ Estas baneado/a, no puedes usar comandos en este bot\n✰ Motivo: ${user.bannedReason || 'Sin Especificar'}`)
 return
 }
 
@@ -429,11 +450,11 @@ m.isCommand = true
 let xp = 'exp' in plugin ? parseInt(plugin.exp) : 10
 m.exp += xp
 if (!isPrems && plugin.coin && global.db.data.users[m.sender].coin < plugin.coin * 1) {
-conn.reply(m.chat, `❮✦❯ Se agotaron tus ${moneda}`, m)
+conn.reply(m.chat, `*_Hinata-Bot_*\n\n➮ *_SIN MONEDAS_*\n✰ Se agotaron tus monedas`, m)
 continue
 }
 if (plugin.level > _user.level) {
-conn.reply(m.chat, `❮✦❯ Se requiere el nivel: *${plugin.level}*\n\n• Tu nivel actual es: *${_user.level}*\n\n• Usa este comando para subir de nivel:\n*${usedPrefix}levelup*`, m)
+conn.reply(m.chat, `*_Hinata-Bot_*\n\n➮ *_NIVEL REQUERIDO_*\n✰ Se requiere el nivel: *_${plugin.level}_*\n✰ Tu nivel actual es: *_${_user.level}_*\n✰ Usa *_${usedPrefix}levelup_* para subir`, m)
 continue
 }
 let extra = {
@@ -480,7 +501,7 @@ await plugin.after.call(this, m, extra)
 console.error(e)
 }}
 if (m.coin)
-conn.reply(m.chat, `❮✦❯ Utilizaste ${+m.coin} ${moneda}`, m)
+conn.reply(m.chat, `*_Hinata-Bot_*\n\n➮ *_MONEDAS USADAS_*\n✰ Utilizaste *_${+m.coin}_* monedas`, m)
 }
 break
 }}
@@ -553,16 +574,16 @@ global.dfail = (type, m, conn, usedPrefix, command) => {
     let verifyaleatorio = ['registrar', 'reg', 'verificar', 'verify', 'register'].getRandom()
 
     const msg = {
-    rowner: '🔐 Solo el Mi Creador del Bot puede usar este comando.',
-    owner: '👑 Solo el Mi Creador y Sub Bots pueden usar este comando.',
-    mods: '🛡️ Solo los Moderadores pueden usar este comando.',
-    premium: '💎 Solo usuarios Premium pueden usar este comando.',
-    group: '「✧」 Este comando es sólo para grupos.',
-    private: '🔒 Solo en Chat Privado puedes usar este comando.',
-    admin: '⚔️ Solo los Admins del Grupo pueden usar este comando.',
-    botAdmin: 'El bot debe ser Admin para ejecutar esto.',
-    unreg: '> 🔰 Debes estar Registrado para usar este comando.\n\n Ejemplo : #reg AmílcarGit.15',
-    restrict: '⛔ Esta función está deshabilitada.'
+    rowner: '*_Hinata-Bot_*\n\n➮ *_SOLO CREADOR_*\n✰ Solo el creador del bot puede usar este comando',
+    owner: '*_Hinata-Bot_*\n\n➮ *_SOLO OWNERS_*\n✰ Solo owners pueden usar este comando',
+    mods: '*_Hinata-Bot_*\n\n➮ *_SOLO MODS_*\n✰ Solo moderadores pueden usar este comando',
+    premium: '*_Hinata-Bot_*\n\n➮ *_SOLO PREMIUM_*\n✰ Solo usuarios premium pueden usar este comando',
+    group: '*_Hinata-Bot_*\n\n➮ *_SOLO GRUPOS_*\n✰ Este comando solo funciona en grupos',
+    private: '*_Hinata-Bot_*\n\n➮ *_SOLO PRIVADO_*\n✰ Este comando solo funciona en chat privado',
+    admin: '*_Hinata-Bot_*\n\n➮ *_SOLO ADMINS_*\n✰ Solo administradores del grupo pueden usar este comando',
+    botAdmin: '*_Hinata-Bot_*\n\n➮ *_NECESITO SER ADMIN_*\n✰ La bot necesita ser administradora del grupo',
+    unreg: '*_Hinata-Bot_*\n\n➮ *_NO REGISTRADO_*\n✰ Debes estar registrado para usar este comando\n✰ Ejemplo: ${usedPrefix}register <nombre> <edad>',
+    restrict: '*_Hinata-Bot_*\n\n➮ *_RESTRINGIDO_*\n✰ Esta funcion esta deshabilitada'
     }[type];
 
     if (msg)
