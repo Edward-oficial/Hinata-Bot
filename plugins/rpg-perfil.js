@@ -54,13 +54,13 @@ let handler = async (m, { conn }) => {
 
   texto += '➮ *_EXPERIENCIA_*\n'
   texto += '✰ ' + barraExp + '\n'
-  texto += '✰ ' + user.exp + ' / ' + expSiguiente + ' (' + porcentajeExp + '%)\n\n'
+  texto += '> ' + user.exp + ' / ' + expSiguiente + ' (' + porcentajeExp + '%)\n\n'
 
   texto += '➮ *_COMBATE_*\n'
   texto += '✰ *_Vida_*\n' + barraVida + '\n'
-  texto += '✰ ' + user.health + ' / ' + user.maxHealth + '\n'
+  texto += '> ' + user.health + ' / ' + user.maxHealth + '\n'
   texto += '✰ *_Mana_*\n' + barraMana + '\n'
-  texto += '✰ ' + user.mana + ' / ' + user.maxMana + '\n'
+  texto += '> ' + user.mana + ' / ' + user.maxMana + '\n'
   texto += '✰ *_Ataque_*: ' + user.attack + '\n'
   texto += '✰ *_Defensa_*: ' + user.defense + '\n\n'
 
