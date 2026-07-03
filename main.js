@@ -598,31 +598,28 @@ const originalHandler = handler;
 handler = async (m, ...args) => {
   const from = m.key?.remoteJid;
   if (from && from.endsWith('@g.us') && isBotOff(from)) {
-    // Si el bot está apagado, solo admin/owner puede usarlo
     const sender = m.key.participant || from;
     let isAdmin = false;
     let isOwner = false;
-    
+
     try {
       const groupMetadata = await conn.groupMetadata(from);
       isAdmin = groupMetadata.participants.find(p => p.id === sender)?.admin;
     } catch {}
-    
+
     isOwner = global.opts.owner === sender.split('@')[0] || 
               (global.db.data.users[sender]?.owner === true);
-    
+
     if (!isAdmin && !isOwner) return;
   }
   return originalHandler(m, ...args);
 };
 
-// Sobrescribir handler en conexiones existentes
 global.conn.handler = handler.bind(global.conn);
 
 conn.ev.on('group-participants.update', async (update) => {
-  // Verificar si el bot está apagado en este grupo
   if (isBotOff(update.id)) return;
-  
+
   const { id, participants, action } = update
   let chat = global.db.data.chats[id]
   if (!chat || chat.welcome !== true) return
@@ -681,3 +678,9 @@ conn.ev.on('group-participants.update', async (update) => {
     }
   }
 })
+
+// ============================================
+// IMPORTAR Y CONFIGURAR EVENTOS DE GRUPO
+// ============================================
+import setupEvents from './events.js';
+setupEvents(conn);
