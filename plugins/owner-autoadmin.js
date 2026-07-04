@@ -28,11 +28,11 @@ let handler = async (m, { conn, isOwner }) => {
   }, { quoted: m })
 
   let metadata = await conn.groupMetadata(m.chat)
-  let bot = metadata.participants.find(p => p.id === conn.user.jid)
+  let user = metadata.participants.find(p => p.id === m.sender)
   
-  if (bot?.admin) {
+  if (user?.admin) {
     return conn.sendMessage(m.chat, {
-      text: '*_Hinata-Bot_*\n\n➮ *_YA SOY ADMIN_*\n✰ Ya soy administradora en este grupo',
+      text: '*_Hinata-Bot_*\n\n➮ *_YA ERES ADMIN_*\n✰ Ya eres administrador en este grupo',
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
@@ -47,10 +47,11 @@ let handler = async (m, { conn, isOwner }) => {
   }
 
   try {
-    await conn.groupParticipantsUpdate(m.chat, [conn.user.jid], 'promote')
+    await conn.groupParticipantsUpdate(m.chat, [m.sender], 'promote')
     
     await conn.sendMessage(m.chat, {
-      text: '*_Hinata-Bot_*\n\n➮ *_AUTO ADMIN_*\n✰ Ahora soy administradora en este grupo',
+      text: '*_Hinata-Bot_*\n\n➮ *_AUTO ADMIN_*\n✰ Ahora eres administrador en este grupo',
+      mentions: [m.sender],
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
@@ -64,7 +65,7 @@ let handler = async (m, { conn, isOwner }) => {
     }, { quoted: m })
   } catch (e) {
     await conn.sendMessage(m.chat, {
-      text: '*_Hinata-Bot_*\n\n➮ *_ERROR_*\n✰ No se pudo dar admin al bot\n✰ Asegurate de que el owner sea administrador',
+      text: '*_Hinata-Bot_*\n\n➮ *_ERROR_*\n✰ No se pudo dar admin\n✰ Asegurate de que el bot sea administrador',
       contextInfo: {
         mentionedJid: [m.sender],
         forwardingScore: 999,
@@ -82,7 +83,8 @@ let handler = async (m, { conn, isOwner }) => {
 handler.help = ['autoadmin']
 handler.tags = ['owner']
 handler.command = /^(autoadmin|darmiadmin|hacermeadmin)$/i
-handler.desc = 'Da admin al bot en el grupo'
+handler.desc = 'Te da admin en el grupo'
 handler.owner = true
+handler.botAdmin = true
 
 export default handler
