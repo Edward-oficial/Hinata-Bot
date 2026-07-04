@@ -1,4 +1,4 @@
-
+// plugins/serbot/qr.js
 const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
@@ -128,7 +128,19 @@ const { connection, lastDisconnect, isNewLogin, qr } = update
 if (isNewLogin) sock.isInit = false
 if (qr && !mcode) {
 if (m?.chat) {
-txtQR = await conn.sendMessage(m.chat, { image: await qrcode.toBuffer(qr, { scale: 8 }), caption: rtx.trim()}, { quoted: m})
+txtQR = await conn.sendMessage(m.chat, { 
+image: await qrcode.toBuffer(qr, { scale: 8 }), 
+caption: rtx.trim(),
+contextInfo: {
+forwardingScore: 999,
+isForwarded: true,
+forwardedNewsletterMessageInfo: {
+newsletterJid: '120363407253203904@newsletter',
+newsletterName: '𓆩⚝𓆪 ʜɪɴᴀᴛᴀ ᴏꜰɪᴄɪᴀʟ 𓆩⚝𓆪',
+serverMessageId: 1
+}
+}
+}, { quoted: m})
 } else {
 return 
 }
@@ -141,7 +153,18 @@ if (qr && mcode) {
 let secret = await sock.requestPairingCode((m.sender.split`@`[0]))
 secret = secret.match(/.{1,4}/g)?.join("")
 
-txtCode = await conn.sendMessage(m.chat, {text : rtx2}, { quoted: m })
+txtCode = await conn.sendMessage(m.chat, {
+text : rtx2,
+contextInfo: {
+forwardingScore: 999,
+isForwarded: true,
+forwardedNewsletterMessageInfo: {
+newsletterJid: '120363407253203904@newsletter',
+newsletterName: '𓆩⚝𓆪 ʜɪɴᴀᴛᴀ ᴏꜰɪᴄɪᴀʟ 𓆩⚝𓆪',
+serverMessageId: 1
+}
+}
+}, { quoted: m })
 codeBot = await m.reply(secret)
 
 console.log(secret)
