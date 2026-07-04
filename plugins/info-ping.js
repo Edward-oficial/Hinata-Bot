@@ -8,7 +8,7 @@ let handler = async (m, { conn }) => {
   const ping = end - start
   
   await conn.sendMessage(m.chat, {
-    text: `*_Hinata-Bot_*\n\n➮ *_PONG_*\n✰ Latencia: *_${ping}ms_*\n✰ Bot activo: *_${conn.ws?.readyState === 1 ? '✅ Conectado' : '❌ Desconectado'}_*`,
+    text: `*_Hinata-Bot_*\n\n➮ *_PONG_*\n✰ Latencia: *_${ping}ms_*`,
     contextInfo: {
       mentionedJid: [m.sender],
       forwardingScore: 999,
