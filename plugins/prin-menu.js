@@ -12,7 +12,7 @@ const textCyberpunk = t => t.replace(/[a-z]/gi, c => charset[c.toLowerCase()] ||
 
 const defaultMenu = {
   before: `
-*_%botname_*
+𝖧𝗂𝗇𝖺𝗍𝖺-𝖡𝗈𝗍
 
 ➮ *_INFORMACION_*
 ✰ *_Usuario_*: %name
@@ -33,7 +33,7 @@ const defaultMenu = {
   footer: '',
   after: `
 
-*_%botname_*
+*_Hinata-Bot_*
 
 ➮ *_CREADORES_*
 ✰ *_Edward_*
@@ -76,8 +76,6 @@ let handler = async (m, { conn, usedPrefix }) => {
     }
   }
 
-  const botName = conn.user?.name || 'Hinata-Bot'
-
   const replace = {
     name: await conn.getName(m.sender),
     level: user.level,
@@ -87,8 +85,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     mode: global.opts.self ? 'Privado' : 'Publico',
     muptime: clockString(process.uptime() * 1000),
     readmore: String.fromCharCode(8206).repeat(4001),
-    tipo: tipo,
-    botname: botName
+    tipo: tipo
   }
 
   const plugins = Object.values(global.plugins || {}).filter(p => !p.disabled)
