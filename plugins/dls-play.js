@@ -5,7 +5,7 @@ import {
   proto
 } from '@whiskeysockets/baileys'
 
-const EDWARD_API = 'https://dv-edward-api.onrender.com/api'
+const EDWARD_API = 'https://dv-edward.onrender.com/api'
 const EDWARD_KEY = 'edward'
 
 const _processing = new Set()
