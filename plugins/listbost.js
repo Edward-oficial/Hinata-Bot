@@ -20,7 +20,7 @@ let handler = async (m, { conn, isOwner }) => {
       if (bot.user?.jid) {
         count++
         texto += `✰ SubHinata #${count}\n`
-        texto += `   Nombre: *_${bot.user?.name || 'SubHinata'}_*\n`
+        texto += `   Nombre: *_${bot.user?.name || 'Jadibot'}_*\n`
         texto += `   JID: *_${bot.user?.jid}_*\n`
         texto += `   Estado: *_${bot.ws?.readyState === 1 ? 'Conectado' : 'Desconectado'}_*\n\n`
       }
