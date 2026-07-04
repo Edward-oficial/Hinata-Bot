@@ -1,3 +1,4 @@
+
 const { useMultiFileAuthState, DisconnectReason, makeCacheableSignalKeyStore, fetchLatestBaileysVersion} = (await import("@whiskeysockets/baileys"));
 import qrcode from "qrcode"
 import NodeCache from "node-cache"
@@ -18,23 +19,25 @@ let crm4 = "IF9hdXRvcmVzcG9uZGVyLmpzIGluZm8tYm90Lmpz"
 let drm1 = ""
 let drm2 = ""
 let rtx = `
-🖥️ *VINCULACIÓN POR QR Hinata*
+*_Hinata-Bot_*
 
-🔖 *Pasos para vincularte a Hinata*:
-1️⃣ Abre 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 en tu teléfono  
-2️⃣ Pulsa ⋮ *Más opciones* → *Dispositivos vinculados*  
-3️⃣ Presiona *"Vincular un dispositivo"*  
-4️⃣ Escanea el código QR que se mostrará aquí
+➮ *_VINCULACION POR QR_*
+✰ Pasos para vincularte a Hinata:
+✰ 1. Abre WhatsApp en tu telefono
+✰ 2. Pulsa Mas opciones → Dispositivos vinculados
+✰ 3. Presiona Vincular un dispositivo
+✰ 4. Escanea el codigo QR que se mostrara aqui
 `.trim()
 
 let rtx2 = `
-🖥️ *VINCULACIÓN POR CÓDIGO DE 8 DÍGITOS*
+*_Hinata-Bot_*
 
-🔖 *Pasos para vincularte a Hinata*:
-1️⃣ Abre 𝗪𝗵𝗮𝘁𝘀𝗔𝗽𝗽 en tu teléfono  
-2️⃣ Pulsa ⋮ *Más opciones* → *Dispositivos vinculados*  
-3️⃣ Presiona *"Vincular un dispositivo"*  
-4️⃣ Selecciona *"Con número"* e introduce el código mostrado  
+➮ *_VINCULACION POR CODIGO DE 8 DIGITOS_*
+✰ Pasos para vincularte a Hinata:
+✰ 1. Abre WhatsApp en tu telefono
+✰ 2. Pulsa Mas opciones → Dispositivos vinculados
+✰ 3. Presiona Vincular un dispositivo
+✰ 4. Selecciona Con numero e introduce el codigo mostrado
 `.trim()
 
 const __filename = fileURLToPath(import.meta.url)
@@ -49,7 +52,7 @@ let time = global.db.data.users[m.sender].Subs + 120000
 const subBots = [...new Set([...global.conns.filter((conn) => conn.user && conn.ws.socket && conn.ws.socket.readyState !== ws.CLOSED).map((conn) => conn)])]
 const subBotsCount = subBots.length
 if (subBotsCount === 30) {
-return m.reply(`No se han encontrado espacios para *Sub-Bots* disponibles.`)
+return m.reply(`*_Hinata-Bot_*\n\n➮ *_SIN ESPACIO_*\n✰ No hay espacios para Sub-Bots disponibles`)
 }
 
 let who = m.mentionedJid && m.mentionedJid[0] ? m.mentionedJid[0] : m.fromMe ? conn.user.jid : m.sender
@@ -92,7 +95,7 @@ fs.mkdirSync(pathYukiJadiBot, { recursive: true })}
 try {
 args[0] && args[0] != undefined ? fs.writeFileSync(pathCreds, JSON.stringify(JSON.parse(Buffer.from(args[0], "base64").toString("utf-8")), null, '\t')) : ""
 } catch {
-conn.reply(m.chat, `${emoji} Use correctamente el comando » ${usedPrefix + command} code`, m)
+conn.reply(m.chat, `*_Hinata-Bot_*\n\n➮ *_ERROR_*\n✰ Uso correcto: ${usedPrefix + command} code`, m)
 return
 }
 
