@@ -20,10 +20,10 @@ const defaultMenu = {
 ✰ *_Modo_*: %mode
 ✰ *_Activo_*: %muptime
 ✰ *_Registrados_*: %totalreg
+✰ *_Tipo_*: %tipo
 
 ➮ *_ENLACES_*
 ✰ *_Canal_*: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
-
 ✰ *_GitHub_*: https://github.com/ElvigilanteDv/Hinata-bot
 
 %readmore
@@ -66,6 +66,16 @@ let handler = async (m, { conn, usedPrefix }) => {
   const user = global.db.data.users[m.sender] || { level: 0, exp: 0 }
   const { min, xp } = xpRange(user.level, global.multiplier)
 
+  let tipo = 'Bot Principal'
+  if (global.conns) {
+    for (const bot of global.conns) {
+      if (bot.user?.jid === conn.user?.jid) {
+        tipo = 'Sub-Bot'
+        break
+      }
+    }
+  }
+
   const replace = {
     name: await conn.getName(m.sender),
     level: user.level,
@@ -74,7 +84,8 @@ let handler = async (m, { conn, usedPrefix }) => {
     totalreg: Object.keys(global.db.data.users).length,
     mode: global.opts.self ? 'Privado' : 'Publico',
     muptime: clockString(process.uptime() * 1000),
-    readmore: String.fromCharCode(8206).repeat(4001)
+    readmore: String.fromCharCode(8206).repeat(4001),
+    tipo: tipo
   }
 
   const plugins = Object.values(global.plugins || {}).filter(p => !p.disabled)
@@ -111,7 +122,17 @@ let handler = async (m, { conn, usedPrefix }) => {
 
   await conn.sendMessage(m.chat, {
     image: thumb,
-    caption: text
+    caption: text,
+    contextInfo: {
+      mentionedJid: [m.sender],
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: '120363407253203904@newsletter',
+        newsletterName: '𓆩⚝𓆪 ʜɪɴᴀᴛᴀ ᴏꜰɪᴄɪᴀʟ 𓆩⚝𓆪',
+        serverMessageId: 1
+      }
+    }
   })
 }
 
