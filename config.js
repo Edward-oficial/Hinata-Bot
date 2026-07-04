@@ -20,7 +20,7 @@ global.libreria = 'Baileys'
 global.baileys = 'V 6.7.16'
 global.vs = '2.2.0'
 global.sessions = 'sessions'
-global.jadi = 'subHinata'
+global.jadi = 'Jadibot'
 global.yukiJadibts = true
 
 global.namecanal = '❇️'
