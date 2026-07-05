@@ -24,7 +24,7 @@ const defaultMenu = {
 
 ➮ *_ENLACES_*
 ✰ *_Canal_*: https://whatsapp.com/channel/0029VbCOTaJ9RZAQPdiZ4J1K
-✰ *_GitHub_*: https://github.com/ElvigilanteDv/Hinata-bot
+✰ *_GitHub_*: https://github.com/Edward-oficial/Hinata-bot
 
 %readmore
 `.trim(),
