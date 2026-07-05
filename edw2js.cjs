@@ -1,6 +1,6 @@
-// edw2js.js â€” Transpilador EDW LANG -> JavaScript
+// edw2js.js — Transpilador EDW LANG -> JavaScript
 // Autor base: Edward Dev
-// Enfoque: basado en lÃ­neas + indentaciÃ³n (como Python).
+// Enfoque: basado en líneas + indentación (como Python).
 
 function replaceKeywords(line) {
   line = line.replace(/\bconstx\b/g, 'const');
@@ -17,12 +17,12 @@ function replaceKeywords(line) {
   line = line.replace(/\bsux\b/g, 'console.info');
   line = line.replace(/\bkrx\b/g, 'console.error');
 
-  // gritax "algo"  ->  console.log("algo")   (statement sin parÃ©ntesis -> con parÃ©ntesis)
+  // gritax "algo"  ->  console.log("algo")   (statement sin paréntesis -> con paréntesis)
   line = line.replace(
     /^(\s*)console\.(log|info|error)\s+(.+?)\s*$/,
     (m, ind, fn, expr) => `${ind}console.${fn}(${expr})`
   );
-  // krx error (ya transpilado a console.error error) tambiÃ©n cae en el regex de arriba.
+  // krx error (ya transpilado a console.error error) también cae en el regex de arriba.
 
   return line;
 }
@@ -47,7 +47,7 @@ function transpileLine(raw) {
   if ((m = line.match(/^(\s*)asincrona\s+funcion\s+(\w+)\s*\(([^)]*)\)\s*:\s*$/))) {
     return `${indent}async function ${m[2]}(${m[3]}) {`;
   }
-  // funcion nombre(params):   (tambiÃ©n sirve como mÃ©todo dentro de clase)
+  // funcion nombre(params):   (también sirve como método dentro de clase)
   if ((m = line.match(/^(\s*)funcion\s+(\w+)\s*\(([^)]*)\)\s*:\s*$/))) {
     return `${indent}function ${m[2]}(${m[3]}) {`;
   }
@@ -112,14 +112,14 @@ function closeBlocksByIndent(lines) {
     const indent = (line.match(/^(\s*)/)[1]).length;
     const isCloser = line.trim().startsWith('}'); // "} else {" / "}" / "}, { quoted: m })"
 
-    // Si la lÃ­nea ya trae su propio '}' (else/catch/objeto cerrado a mano),
+    // Si la línea ya trae su propio '}' (else/catch/objeto cerrado a mano),
     // consumimos un nivel de la pila sin emitir una llave extra.
     if (isCloser && stack.length > 1) {
       stack.pop();
     }
 
-    // Cierra automÃ¡ticamente cualquier bloque cuya sangrÃ­a de apertura
-    // sea igual o mayor a la sangrÃ­a actual (volvimos a ese nivel o mÃ¡s atrÃ¡s).
+    // Cierra automáticamente cualquier bloque cuya sangría de apertura
+    // sea igual o mayor a la sangría actual (volvimos a ese nivel o más atrás).
     while (stack.length > 1 && indent <= stack[stack.length - 1]) {
       const openIndent = stack.pop();
       out.push(' '.repeat(openIndent) + '}');
