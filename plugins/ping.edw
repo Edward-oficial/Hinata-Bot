@@ -1,0 +1,39 @@
+edw dejax handler = asincrona (m, { conn }) =>:
+    edw constx start = Date.now()
+    edw espera conn.sendMessage(m.chat, {
+      text: '*_Hinata-Bot_*\n\nâž® *_PING_*\nâœ° Midiendo latencia...'
+    }, { quoted: m })
+
+    edw constx end = Date.now()
+    edw constx ping = end - start
+
+    edw dejax calificacion = ""
+    edw si ping < 100:
+        edw calificacion = "ðŸŸ¢ Excelente"
+    edw siotro ping < 300:
+        edw calificacion = "ðŸŸ¡ Buena"
+    edw siotro ping < 700:
+        edw calificacion = "ðŸŸ  Regular"
+    edw sino:
+        edw calificacion = "ðŸ”´ Lenta"
+
+    edw espera conn.sendMessage(m.chat, {
+      text: `*_Hinata-Bot_*\n\nâž® *_PONG_*\nâœ° Latencia: *_${ping}ms_*\nâœ° Calidad: *_${calificacion}_*`,
+      contextInfo: {
+        mentionedJid: [m.sender],
+        forwardingScore: 999,
+        isForwarded: true,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: '120363407253203904@newsletter',
+          newsletterName: 'ð“†©âšð“†ª ÊœÉªÉ´á´€á´›á´€ á´êœ°Éªá´„Éªá´€ÊŸ ð“†©âšð“†ª',
+          serverMessageId: 1
+        }
+      }
+    }, { quoted: m })
+
+handler.help = ['ping2']
+handler.tags = ['info']
+handler.command = /^(ping2|pong2)$/i
+handler.desc = 'Mide la latencia del bot con calificaciÃ³n'
+
+edw exportar por defecto handler
